@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE-edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">	
+		<link rel="stylesheet" href="{{ url_for('static',filename='css/w3.css')}}">
+		<title>CRUD</title>
+	</head>
+	<body>
+		<div class="w3-bar w3-indigo w3-container">
+			<h3>Simple CRUD</h3>
+		</div>
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+				{% for category,message in messages %}
+					<div class="w3-bar w3-padding w3-amber">
+						<b>{{ category.upper() }}</b>:{{ message }}
+					</div>
+				{% endfor %}
+			{% endif %}
+		{% endwith%}
+		<div class="w3-container w3-padding">
+			{% block content %}
+			{% endblock %}
+		</div>
+		<hr>
+		<center>
+			Copyright &copy; 2025, University of Cebu-CCS
+		</center>
+		<script>
+			function modalcontrol(modalname,control){
+				document.getElementById(modalname).style.display=control;
+			}
+			
+			function deletecontrol(itemcode){
+				let ok = confirm("Delete this item?"+itemcode);
+				if(ok){
+					location.href="deleteproduct?itemcode="+itemcode;
+				}
+			}
+			function updatecontrol(itemcode,productname,unit,price,qty){
+				document.getElementById('itemcode').value=itemcode;
+				document.getElementById('productname').value=productname;
+				document.getElementById('unit').value=unit;
+				document.getElementById('price').value=price;
+				document.getElementById('qty').value=qty;
+				document.getElementById('edit').value='1';
+				modalcontrol('mymodal','block');
+			}
+			
+		</script>
+	</body>
+</html>

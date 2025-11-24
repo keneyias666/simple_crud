@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+	<h3>{{ title }}</h3>
+	<button class="w3-right w3-margin-bottom w3-button w3-blue" onclick="modalcontrol('mymodal','block')">+ADD</button>
+	<table class="w3-table-all">
+		<tr>
+			{% for head in header %}
+			<th>{{ head.upper() }}</th>
+			{% endfor %}
+			
+		</tr>
+		{% for item in data %}
+		<tr>
+			<td>{{ item['itemcode'] }}</td>
+			<td>{{ item['productname'] }}</td>
+			<td>{{ item['unit'] }}</td>
+			<td>{{ item['price'] }}</td>
+			<td>{{ item['qty'] }}</td>
+			<td>{{ item['price']|float *  item['qty']|float}}</td>
+			<td>
+				<button onclick="updatecontrol('{{ item['itemcode'] }}','{{ item['productname'] }}','{{ item['unit'] }}','{{ item['price'] }}','{{ item['qty'] }}','{{ item['qty'] }}')">&#9998;</button>
+				<button onclick="deletecontrol('{{ item['itemcode'] }}')">&times;</button>
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<div class="w3-modal" id="mymodal">
+		<div class="w3-modal-content w3-animate-top">
+			<div class="w3-container w3-blue">
+				<span class="w3-button w3-display-topright" onclick="modalcontrol('mymodal','none')">&times;</span>
+				<h3>Product</h3>
+			</div>
+			<div class="w3-container w3-padding">
+				<form method="post" action="/saveproduct">
+					<input type="hidden" name="edit" id="edit">
+					<p>
+						<label><b>ITEMCODE</b></label>
+						<input type="text" NAME="itemcode" id="itemcode" class="w3-input">
+					</p>
+					<p>
+						<label><b>PRODUCT NAME</b></label>
+						<input type="text" NAME="productname" id="productname" class="w3-input">
+					</p>
+					<p>
+						<label><b>UNIT</b></label>
+						<input type="text" NAME="unit" id="unit" class="w3-input">
+					</p>
+					<p>
+						<label><b>PRICE</b></label>
+						<input type="text" NAME="price" id="price" class="w3-input">
+					</p>
+					
+					<p>
+						<label><b>QUANTITY</b></label>
+						<input type="text" NAME="qty" id="qty" class="w3-input">
+					</p>
+					<p>
+						<input type="submit" value="SAVE" class="w3-button w3-blue w3-right">
+					</p>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
