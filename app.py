@@ -23,12 +23,17 @@ def saveproduct()->None:
     price:str = request.form['price']
     qty:str = request.form['qty']
     edit:str = request.form['edit']
+    old_itemcode:str = request.form.get('old_itemcode', '')
     
     if edit=="1":
-        ok:bool = updateitem('products',itemcode=itemcode,productname=productname,unit=unit,price=price,qty=qty)
+        # If item code changed, we need to update with the old itemcode as WHERE clause
+        if old_itemcode and old_itemcode != itemcode:
+            ok:bool = updateitem('products',old_itemcode=old_itemcode,itemcode=itemcode,productname=productname,unit=unit,price=price,qty=qty)
+        else:
+            ok:bool = updateitem('products',itemcode=itemcode,productname=productname,unit=unit,price=price,qty=qty)
         #
         if ok==True:
-            flash("Product Updated","success")
+            flash("Product Updated Successfully","success")
         else:
             flash("Error Updating Product","error")
         #
@@ -36,7 +41,7 @@ def saveproduct()->None:
         ok:bool = additem('products',itemcode=itemcode,productname=productname,unit=unit,price=price,qty=qty)
         #
         if ok==True:
-            flash("New Product Added","success")
+            flash("New Product Added Successfully","success")
         else:
             flash("Error Adding Product","error")
         #

@@ -52,8 +52,22 @@ def updateitem(table:str,**kwargs)->None:
     keys:list = list(kwargs.keys())
     values:list = list(kwargs.values())
     fld:list = []
-    for i in range(1,len(values)):
-        fld.append(f"`{keys[i]}`='{values[i]}'")
+    where_key = keys[0]
+    where_value = values[0]
+    
+    # If old_itemcode is provided, use it for WHERE clause
+    if 'old_itemcode' in kwargs:
+        where_key = 'old_itemcode'
+        where_value = kwargs['old_itemcode']
+        # Skip old_itemcode in the SET clause
+        for i in range(len(keys)):
+            if keys[i] != 'old_itemcode':
+                fld.append(f"`{keys[i]}`='{values[i]}'")
+    else:
+        # Original behavior: skip first key-value for WHERE clause
+        for i in range(1,len(values)):
+            fld.append(f"`{keys[i]}`='{values[i]}'")
+    
     fld_val:str = ",".join(fld)
-    sql:str = f"UPDATE `{table}` SET {fld_val} WHERE `{keys[0]}`='{values[0]}'"
+    sql:str = f"UPDATE `{table}` SET {fld_val} WHERE `itemcode`='{where_value}'"
     return postprocess(sql) 

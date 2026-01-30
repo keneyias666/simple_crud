@@ -1,62 +1,348 @@
 {% extends "base.html" %}
 {% block content %}
-	<h3>{{ title }}</h3>
-	<button class="w3-right w3-margin-bottom w3-button w3-blue" onclick="modalcontrol('mymodal','block')">+ADD</button>
-	<table class="w3-table-all">
-		<tr>
-			{% for head in header %}
-			<th>{{ head.upper() }}</th>
+	<style>
+		.page-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 30px;
+			flex-wrap: wrap;
+			gap: 15px;
+		}
+		
+		.page-title {
+			font-size: 28px;
+			font-weight: 700;
+			color: #2d3748;
+			margin: 0;
+			letter-spacing: -0.5px;
+		}
+		
+		.search-container {
+			display: flex;
+			gap: 15px;
+			align-items: center;
+			margin-bottom: 25px;
+			flex-wrap: wrap;
+		}
+		
+		.search-box {
+			flex: 1;
+			min-width: 250px;
+			position: relative;
+		}
+		
+		.search-input {
+			width: 100%;
+			padding: 14px 45px 14px 16px;
+			border: 2px solid #e2e8f0;
+			border-radius: 10px;
+			font-size: 15px;
+			transition: all 0.3s ease;
+			background: white;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+		}
+		
+		.search-input:focus {
+			border-color: #48bb78;
+			box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+			outline: none;
+		}
+		
+		.search-icon {
+			position: absolute;
+			right: 16px;
+			top: 50%;
+			transform: translateY(-50%);
+			color: #a0aec0;
+			font-size: 18px;
+		}
+		
+		.add-button {
+			background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+			border: none;
+			border-radius: 10px;
+			padding: 14px 28px;
+			color: white;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+			font-size: 15px;
+		}
+		
+		.add-button:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+		}
+		
+		.data-table {
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+			background: white;
+			border: 1px solid #e2e8f0;
+		}
+		
+		.data-table th {
+			background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+			color: white;
+			font-weight: 600;
+			text-transform: uppercase;
+			font-size: 12px;
+			letter-spacing: 0.5px;
+			padding: 18px 14px !important;
+		}
+		
+		.data-table tr {
+			transition: all 0.2s ease;
+		}
+		
+		.data-table tbody tr:hover {
+			background-color: #f7fafc !important;
+			transform: translateX(4px);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+		}
+		
+		.data-table td {
+			padding: 16px 14px !important;
+			color: #4a5568;
+			border-bottom: 1px solid #e2e8f0;
+		}
+		
+		.action-btn {
+			border: none;
+			padding: 8px 12px;
+			margin: 0 4px;
+			border-radius: 6px;
+			cursor: pointer;
+			font-size: 16px;
+			transition: all 0.2s ease;
+		}
+		
+		.edit-btn {
+			background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+			color: white;
+		}
+		
+		.edit-btn:hover {
+			transform: scale(1.08);
+			box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+		}
+		
+		.delete-btn {
+			background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+			color: white;
+			font-weight: bold;
+		}
+		
+		.delete-btn:hover {
+			transform: scale(1.08);
+			box-shadow: 0 4px 12px rgba(245, 101, 101, 0.4);
+		}
+		
+		.modal-content-custom {
+			border-radius: 16px;
+			overflow: hidden;
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+		}
+		
+		.modal-header {
+			background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+			padding: 24px;
+			color: white;
+		}
+		
+		.modal-header h3 {
+			margin: 0;
+			font-weight: 600;
+		}
+		
+		.close-modal {
+			background: rgba(255, 255, 255, 0.2);
+			border-radius: 50%;
+			width: 36px;
+			height: 36px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: all 0.2s ease;
+		}
+		
+		.close-modal:hover {
+			background: rgba(255, 255, 255, 0.3);
+			transform: rotate(90deg);
+		}
+		
+		.form-group {
+			margin-bottom: 20px;
+		}
+		
+		.form-label {
+			display: block;
+			font-weight: 600;
+			color: #2d3748;
+			margin-bottom: 8px;
+			font-size: 14px;
+		}
+		
+		.form-input {
+			border: 2px solid #e2e8f0;
+			border-radius: 8px;
+			padding: 12px;
+			transition: all 0.3s ease;
+			font-size: 15px;
+		}
+		
+		.form-input:focus {
+			border-color: #48bb78;
+			box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+			outline: none;
+		}
+		
+		.submit-btn {
+			background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+			border: none;
+			border-radius: 10px;
+			padding: 14px 36px;
+			color: white;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+			font-size: 15px;
+		}
+		
+		.submit-btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+		}
+		
+		.total-column {
+			font-weight: 700;
+			color: #48bb78;
+			font-size: 16px;
+		}
+		
+		.empty-state {
+			text-align: center;
+			padding: 60px 20px;
+			color: #a0aec0;
+		}
+		
+		.empty-state-icon {
+			font-size: 64px;
+			margin-bottom: 16px;
+		}
+	</style>
+
+	<div class="page-header">
+		<h3 class="page-title">{{ title }}</h3>
+		<button class="add-button" onclick="resetForm(); modalcontrol('mymodal','block')">
+			➕ Add New Product
+		</button>
+	</div>
+	
+	<div class="search-container">
+		<div class="search-box">
+			<input type="text" id="searchInput" class="search-input" placeholder="🔍 Search products by code, name, unit, price, or quantity..." onkeyup="filterTable()">
+			<span class="search-icon">🔍</span>
+		</div>
+	</div>
+	
+	{% if data %}
+	<table class="w3-table-all data-table">
+		<thead>
+			<tr>
+				{% for head in header %}
+				<th>{{ head.upper() }}</th>
+				{% endfor %}
+				<th>ACTIONS</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for item in data %}
+			<tr>
+				<td>{{ item['itemcode'] }}</td>
+				<td>{{ item['productname'] }}</td>
+				<td>{{ item['unit'] }}</td>
+				<td>₱{{ "%.2f"|format(item['price']|float) }}</td>
+				<td>{{ item['qty'] }}</td>
+				<td class="total-column">₱{{ "%.2f"|format(item['price']|float * item['qty']|float) }}</td>
+				<td>
+					<button class="action-btn edit-btn" 
+						onclick="updatecontrol('{{ item['itemcode'] }}','{{ item['productname'] }}','{{ item['unit'] }}','{{ item['price'] }}','{{ item['qty'] }}')">
+						✏️
+					</button>
+					<button class="action-btn delete-btn" 
+						onclick="deletecontrol('{{ item['itemcode'] }}')">
+						🗑️
+					</button>
+				</td>
+			</tr>
 			{% endfor %}
-			
-		</tr>
-		{% for item in data %}
-		<tr>
-			<td>{{ item['itemcode'] }}</td>
-			<td>{{ item['productname'] }}</td>
-			<td>{{ item['unit'] }}</td>
-			<td>{{ item['price'] }}</td>
-			<td>{{ item['qty'] }}</td>
-			<td>{{ item['price']|float *  item['qty']|float}}</td>
-			<td>
-				<button onclick="updatecontrol('{{ item['itemcode'] }}','{{ item['productname'] }}','{{ item['unit'] }}','{{ item['price'] }}','{{ item['qty'] }}','{{ item['qty'] }}')">&#9998;</button>
-				<button onclick="deletecontrol('{{ item['itemcode'] }}')">&times;</button>
-			</td>
-		</tr>
-		{% endfor %}
+		</tbody>
 	</table>
+	{% else %}
+	<div class="empty-state">
+		<div class="empty-state-icon">📦</div>
+		<h3>No Products Yet</h3>
+		<p>Click "Add New Product" to get started</p>
+	</div>
+	{% endif %}
+	
 	<div class="w3-modal" id="mymodal">
-		<div class="w3-modal-content w3-animate-top">
-			<div class="w3-container w3-blue">
-				<span class="w3-button w3-display-topright" onclick="modalcontrol('mymodal','none')">&times;</span>
-				<h3>Product</h3>
+		<div class="w3-modal-content w3-animate-zoom modal-content-custom" style="max-width: 500px;">
+			<div class="modal-header" style="position: relative;">
+				<span class="close-modal" style="position: absolute; right: 20px; top: 20px;" 
+					onclick="modalcontrol('mymodal','none')">&times;</span>
+				<h3 id="modal-title">Add New Product</h3>
 			</div>
-			<div class="w3-container w3-padding">
+			<div class="w3-container w3-padding" style="padding: 30px;">
 				<form method="post" action="/saveproduct">
-					<input type="hidden" name="edit" id="edit">
-					<p>
-						<label><b>ITEMCODE</b></label>
-						<input type="text" NAME="itemcode" id="itemcode" class="w3-input">
-					</p>
-					<p>
-						<label><b>PRODUCT NAME</b></label>
-						<input type="text" NAME="productname" id="productname" class="w3-input">
-					</p>
-					<p>
-						<label><b>UNIT</b></label>
-						<input type="text" NAME="unit" id="unit" class="w3-input">
-					</p>
-					<p>
-						<label><b>PRICE</b></label>
-						<input type="text" NAME="price" id="price" class="w3-input">
-					</p>
+					<input type="hidden" name="edit" id="edit" value="0">
+					<input type="hidden" name="old_itemcode" id="old_itemcode" value="">
 					
-					<p>
-						<label><b>QUANTITY</b></label>
-						<input type="text" NAME="qty" id="qty" class="w3-input">
-					</p>
-					<p>
-						<input type="submit" value="SAVE" class="w3-button w3-blue w3-right">
-					</p>
+					<div class="form-group">
+						<label class="form-label">ITEM CODE</label>
+						<input type="text" name="itemcode" id="itemcode" 
+							class="w3-input form-input" required>
+					</div>
+					
+					<div class="form-group">
+						<label class="form-label">PRODUCT NAME</label>
+						<input type="text" name="productname" id="productname" 
+							class="w3-input form-input" required>
+					</div>
+					
+					<div class="form-group">
+						<label class="form-label">UNIT</label>
+						<input type="text" name="unit" id="unit" 
+							class="w3-input form-input" required>
+					</div>
+					
+					<div class="form-group">
+						<label class="form-label">PRICE</label>
+						<input type="number" step="0.01" name="price" id="price" 
+							class="w3-input form-input" required>
+					</div>
+					
+					<div class="form-group">
+						<label class="form-label">QUANTITY</label>
+						<input type="number" name="qty" id="qty" 
+							class="w3-input form-input" required>
+					</div>
+					
+					<div style="text-align: right; margin-top: 30px;">
+						<button type="button" class="w3-button" 
+							style="margin-right: 10px;" 
+							onclick="modalcontrol('mymodal','none')">
+							Cancel
+						</button>
+						<button type="submit" class="submit-btn">
+							💾 Save Product
+						</button>
+					</div>
 				</form>
 			</div>
 		</div>
