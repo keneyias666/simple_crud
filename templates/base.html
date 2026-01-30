@@ -211,6 +211,64 @@
 					tr[i].style.display = found ? "" : "none";
 				}
 			}
+			
+			var sortDirection = 'asc'; // Track sort direction
+			
+			function sortTableByItemCode() {
+				var table = document.getElementById("productTable");
+				if (!table) return;
+				
+				var tbody = table.querySelector("tbody");
+				if (!tbody) return;
+				
+				var rows = Array.from(tbody.querySelectorAll("tr"));
+				var sortIcon = document.getElementById("sortIcon");
+				var sortBtn = document.getElementById("sortBtn");
+				
+				// Toggle sort direction
+				if (sortDirection === 'asc') {
+					sortDirection = 'desc';
+					sortIcon.textContent = '↓';
+				} else {
+					sortDirection = 'asc';
+					sortIcon.textContent = '↑';
+				}
+				
+				// Add active class
+				sortBtn.classList.add('active');
+				
+				// Sort rows by item code (first column)
+				rows.sort(function(a, b) {
+					var aText = a.cells[0].textContent.trim();
+					var bText = b.cells[0].textContent.trim();
+					
+					// Try to compare as numbers if possible
+					var aNum = parseFloat(aText);
+					var bNum = parseFloat(bText);
+					
+					if (!isNaN(aNum) && !isNaN(bNum)) {
+						// Both are numbers
+						return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
+					} else {
+						// Compare as strings
+						if (sortDirection === 'asc') {
+							return aText.localeCompare(bText);
+						} else {
+							return bText.localeCompare(aText);
+						}
+					}
+				});
+				
+				// Remove all rows from tbody
+				while (tbody.firstChild) {
+					tbody.removeChild(tbody.firstChild);
+				}
+				
+				// Append sorted rows
+				rows.forEach(function(row) {
+					tbody.appendChild(row);
+				});
+			}
 		</script>
 	</body>
 </html>

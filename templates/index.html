@@ -92,6 +92,41 @@
 			font-size: 12px;
 			letter-spacing: 0.5px;
 			padding: 18px 14px !important;
+			position: relative;
+		}
+		
+		.sort-header {
+			cursor: pointer;
+			user-select: none;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 8px;
+		}
+		
+		.sort-button {
+			background: rgba(255, 255, 255, 0.2);
+			border: none;
+			border-radius: 4px;
+			padding: 4px 8px;
+			color: white;
+			cursor: pointer;
+			font-size: 14px;
+			transition: all 0.2s ease;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 28px;
+			height: 28px;
+		}
+		
+		.sort-button:hover {
+			background: rgba(255, 255, 255, 0.3);
+			transform: scale(1.1);
+		}
+		
+		.sort-button.active {
+			background: rgba(255, 255, 255, 0.4);
 		}
 		
 		.data-table tr {
@@ -251,11 +286,20 @@
 	</div>
 	
 	{% if data %}
-	<table class="w3-table-all data-table">
+	<table class="w3-table-all data-table" id="productTable">
 		<thead>
 			<tr>
 				{% for head in header %}
-				<th>{{ head.upper() }}</th>
+					{% if head.lower() == 'itemcode' %}
+					<th class="sort-header" onclick="sortTableByItemCode()">
+						<span>{{ head.upper() }}</span>
+						<button class="sort-button" id="sortBtn" title="Sort by Item Code">
+							<span id="sortIcon">⇅</span>
+						</button>
+					</th>
+					{% else %}
+					<th>{{ head.upper() }}</th>
+					{% endif %}
 				{% endfor %}
 				<th>ACTIONS</th>
 			</tr>
