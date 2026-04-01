@@ -1,5 +1,25 @@
 # CRUD Application - Product Management System
 
+# FOR SQLITE AND QUERIES AND ALL
+sqlite3 crud.db
+.databases (to verify)
+CREATE TABLE table_name ( column1 datatype, column2 datatype);
+FOREIGN KEY (trackartist) REFERENCES artist (artistid);
+DROP TABLE table_name;
+.quit
+
+CREATING VENV IN PYTHON
+
+python -m venv venv
+cd venv
+cd Scripts
+activate / deactivate
+
+INSTALLING DEPENDENCIES NEEDED
+
+pip install -r requirements.txt
+
+
 A simple Flask-based CRUD (Create, Read, Update, Delete) application for managing products with a modern, responsive UI.
 
 ## Features
