@@ -1,6 +1,7 @@
 # CRUD Application - Product Management System
 
 # FOR SQLITE AND QUERIES AND ALL
+
 sqlite3 crud.db
 .databases (to verify)
 CREATE TABLE table_name ( column1 datatype, column2 datatype);
