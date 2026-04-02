@@ -1,4 +1,16 @@
-# CRUD Application - Product Management System
+# CRUD Application
+
+# FOR Virtual Environment Setup
+
+- irm https://claude.ai/install.ps1 | iex
+- and also download ollama (irm https://ollama.com/install.ps1 | iex) or download manually and make sure you connect your device as well,
+  by selecting a deepseek cloud agent, and will reroute you to connect the device.
+- Download GIT as well
+- After installing the claude.ai to windows make sure  you go to
+  (Edit the System and Environment Variables) check the system variables and look for path and add the path,
+  that you installed the claude in.
+- ollama launch claude --model minimax-m2.5:cloud
+
 
 # FOR SQLITE AND QUERIES AND ALL
 
@@ -9,16 +21,61 @@ FOREIGN KEY (trackartist) REFERENCES artist (artistid);
 DROP TABLE table_name;
 .quit
 
-CREATING VENV IN PYTHON
+- DATA TYPES (INT)
+INT
+INTEGER
+TINYINT
+SMALLINT
+MEDIUMINT
+BIGINT
+UNSIGNED BIG INT
+INT2
+INT8
+
+- DATA TYPES (CHAR)
+CHARACTER(20)
+VARCHAR(255)
+VARYING CHARACTER(255)
+NCHAR(55)
+NATIVE CHARACTER(70)
+NVARCHAR(100)
+TEXT
+CLOB
+
+- DATA TYPES (REAL)
+REAL
+DOUBLE
+DOUBLE PRECISION
+FLOAT
+
+- DATA TYPES (NUMERIC)
+NUMERIC
+DECIMAL(10,5)
+BOOLEAN
+DATE
+DATETIME
+
+
+# CREATING VENV IN PYTHON
 
 python -m venv venv
 cd venv
 cd Scripts
 activate / deactivate
 
-INSTALLING DEPENDENCIES NEEDED
 
-pip install -r requirements.txt
+# INSTALLING DEPENDENCIES NEEDED!!
+
+(pip install -r requirements.txt)
+pip install flask
+pip install debhelper
+pip install sqlalchemy
+pip install flash
+
+
+# FOR CSS SETUP W3 SCHOOLS
+https://www.w3schools.com/w3css/4/w3.css
+https://www.w3schools.com/w3css/5/w3.css
 
 
 A simple Flask-based CRUD (Create, Read, Update, Delete) application for managing products with a modern, responsive UI.
