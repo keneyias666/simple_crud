@@ -5,7 +5,7 @@
 - irm https://claude.ai/install.ps1 | iex
 - and also download ollama (irm https://ollama.com/install.ps1 | iex) or download manually and make sure you connect your device as well,
   by selecting a deepseek cloud agent, and will reroute you to connect the device.
-- Download GIT as well
+- Download GIT as well (git clone <https://github.com/keneyias666/simple_crud>)
 - After installing the claude.ai to windows make sure  you go to
   (Edit the System and Environment Variables) check the system variables and look for path and add the path,
   that you installed the claude in.
