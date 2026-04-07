@@ -19,6 +19,7 @@ sqlite3 crud.db
 CREATE TABLE table_name ( column1 datatype, column2 datatype);
 FOREIGN KEY (trackartist) REFERENCES artist (artistid);
 DROP TABLE table_name;
+.tables (display all tables)
 .quit
 
 - DATA TYPES (INT)
