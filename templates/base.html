@@ -1,274 +1,279 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE-edge">
-		<meta name="viewport" content="width=device-width,initial-scale=1.0">	
-		<link rel="stylesheet" href="{{ url_for('static',filename='css/w3.css')}}">
-		<!-- Favicon and Logo -->
-		<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
-		<link rel="alternate icon" href="{{ url_for('static', filename='images/favicon.svg') }}">
-		<link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}">
-		<title>CRUD Application</title>
-		<style>
-			body {
-				background: linear-gradient(135deg, #F5B0CB 0%, #C4BBB8 100%);
-				min-height: 100vh;
-				margin: 0;
-				font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE-edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static',filename='css/w3.css')}}">
+	<!-- Favicon and Logo -->
+	<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+	<link rel="alternate icon" href="{{ url_for('static', filename='images/favicon.svg') }}">
+	<link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}">
+	<title>CRUD Application</title>
+	<style>
+		body {
+			background: linear-gradient(135deg, #F5B0CB 0%, #C4BBB8 100%);
+			min-height: 100vh;
+			margin: 0;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
+
+		.app-header {
+			background: #f5f5f5;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+			padding: 20px 0;
+		}
+
+		.header-content {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+		}
+
+		.app-logo {
+			width: 50px;
+			height: 50px;
+			transition: transform 0.3s ease;
+		}
+
+		.app-logo:hover {
+			transform: scale(1.1) rotate(5deg);
+		}
+
+		.app-title {
+			font-size: 28px;
+			font-weight: 600;
+			background: linear-gradient(135deg, #2a3a46 0%, #2a3a46 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+			margin: 0;
+			font-family: 'Courier New', Courier, monospace	;
+		}
+
+		.flash-message {
+			animation: slideDown 0.5s ease-out;
+			border-radius: 8px;
+			margin: 20px auto;
+			max-width: 1200px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		}
+
+		@keyframes slideDown {
+			from {
+				opacity: 0;
+				transform: translateY(-20px);
 			}
-			
-			.app-header {
-				background: rgba(255, 255, 255, 0.98);
-				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-				padding: 20px 0;
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
 			}
-			
-			.header-content {
-				display: flex;
-				align-items: center;
-				gap: 15px;
-			}
-			
-			.app-logo {
-				width: 50px;
-				height: 50px;
-				transition: transform 0.3s ease;
-			}
-			
-			.app-logo:hover {
-				transform: scale(1.1) rotate(5deg);
-			}
-			
-			.app-title {
-				font-size: 28px;
-				font-weight: 600;
-				background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
-				background-clip: text;
-				margin: 0;
-			}
-			
-			.flash-message {
-				animation: slideDown 0.5s ease-out;
-				border-radius: 8px;
-				margin: 20px auto;
-				max-width: 1200px;
-				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-			}
-			
-			@keyframes slideDown {
-				from {
-					opacity: 0;
-					transform: translateY(-20px);
-				}
-				to {
-					opacity: 1;
-					transform: translateY(0);
-				}
-			}
-			
-			.flash-success {
-				background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-				color: white;
-				border-left: 4px solid #2f855a;
-			}
-			
-			.flash-error {
-				background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-				color: white;
-				border-left: 4px solid #c53030;
-			}
-			
-			.main-container {
-				background: white;
-				border-radius: 16px;
-				box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-				margin: 30px auto;
-				max-width: 1200px;
-				padding: 30px;
-			}
-			
-			.footer {
-				text-align: center;
-				color: white;
-				padding: 20px;
-				font-size: 14px;
-				opacity: 0.9;
-			}
-			
-			.footer-content {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: 12px;
-			}
-			
-			.footer-logo {
-				width: 30px;
-				height: 30px;
-				opacity: 0.9;
-				filter: brightness(0) invert(1);
-			}
-			
-			.w3-modal {
-				backdrop-filter: blur(5px);
-			}
-		</style>
-	</head>
-	<body>
-		<div class="app-header">
-			<div class="w3-container">
-				<div class="header-content">
-					<img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" class="app-logo">
-					<h3 class="app-title">Product Management System</h3>
-				</div>
+		}
+
+		.flash-success {
+			background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+			color: white;
+			border-left: 4px solid #2f855a;
+		}
+
+		.flash-error {
+			background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+			color: white;
+			border-left: 4px solid #c53030;
+		}
+
+		.main-container {
+			background: #f5f5f5;
+			border-radius: 16px;
+			box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+			margin: 30px auto;
+			max-width: 1200px;
+			padding: 30px;
+		}
+
+		.footer {
+			text-align: center;
+			color: #f5f5f5;
+			padding: 20px;
+			font-size: 14px;
+			opacity: 0.9;
+		}
+
+		.footer-content {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 12px;
+		}
+
+		.footer-logo {
+			width: 30px;
+			height: 30px;
+			opacity: 0.9;
+			filter: brightness(0) invert(1);
+		}
+
+		.w3-modal {
+			backdrop-filter: blur(5px);
+		}
+	</style>
+</head>
+
+<body>
+	<div class="app-header">
+		<div class="w3-container">
+			<div class="header-content">
+				<img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" class="app-logo">
+				<h3 class="app-title">Product Management System</h3>
 			</div>
 		</div>
-		
-		{% with messages = get_flashed_messages(with_categories=true) %}
-			{% if messages %}
-				{% for category,message in messages %}
-					<div class="flash-message flash-{{ category }} w3-padding">
-						<div class="w3-container">
-							<b>{{ category.upper() }}</b>: {{ message }}
-						</div>
-					</div>
-				{% endfor %}
-			{% endif %}
-		{% endwith%}
-		
-		<div class="main-container">
-			{% block content %}
-			{% endblock %}
+	</div>
+
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+	{% for category,message in messages %}
+	<div class="flash-message flash-{{ category }} w3-padding">
+		<div class="w3-container">
+			<b>{{ category.upper() }}</b>: {{ message }}
 		</div>
-		
-		<div class="footer">
-			<div class="footer-content">
-				<img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" class="footer-logo">
-				<span>Copyright &copy; 2025, University of Cebu-CCS</span>
-			</div>
+	</div>
+	{% endfor %}
+	{% endif %}
+	{% endwith%}
+
+	<div class="main-container">
+		{% block content %}
+		{% endblock %}
+	</div>
+
+	<div class="footer">
+		<div class="footer-content">
+			<img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" class="footer-logo">
+			<span>Copyright &copy; 2025, University of Cebu-CCS</span>
 		</div>
-		
-		<script>
-			function modalcontrol(modalname,control){
-				document.getElementById(modalname).style.display=control;
+	</div>
+
+	<script>
+		function modalcontrol(modalname, control) {
+			document.getElementById(modalname).style.display = control;
+		}
+
+		function deletecontrol(itemcode) {
+			let ok = confirm("Delete this item? " + itemcode);
+			if (ok) {
+				location.href = "deleteproduct?itemcode=" + itemcode;
 			}
-			
-			function deletecontrol(itemcode){
-				let ok = confirm("Delete this item? " + itemcode);
-				if(ok){
-					location.href="deleteproduct?itemcode="+itemcode;
-				}
-			}
-			
-			function updatecontrol(itemcode,productname,unit,price,qty){
-				document.getElementById('itemcode').value=itemcode;
-				document.getElementById('old_itemcode').value=itemcode;
-				document.getElementById('itemcode').readOnly = false;
-				document.getElementById('productname').value=productname;
-				document.getElementById('unit').value=unit;
-				document.getElementById('price').value=price;
-				document.getElementById('qty').value=qty;
-				document.getElementById('edit').value='1';
-				document.getElementById('modal-title').innerText='Edit Product';
-				modalcontrol('mymodal','block');
-			}
-			
-			function resetForm(){
-				document.getElementById('itemcode').readOnly = false;
-				document.getElementById('old_itemcode').value='';
-				document.getElementById('edit').value='0';
-				document.getElementById('modal-title').innerText='Add New Product';
-				document.getElementById('itemcode').value='';
-				document.getElementById('productname').value='';
-				document.getElementById('unit').value='';
-				document.getElementById('price').value='';
-				document.getElementById('qty').value='';
-			}
-			
-			function filterTable() {
-				var input, filter, table, tr, td, i, txtValue;
-				input = document.getElementById("searchInput");
-				filter = input.value.toUpperCase();
-				table = document.querySelector(".data-table");
-				if (!table) return;
-				tr = table.getElementsByTagName("tr");
-				
-				for (i = 1; i < tr.length; i++) {
-					td = tr[i].getElementsByTagName("td");
-					var found = false;
-					for (var j = 0; j < td.length - 1; j++) {
-						if (td[j]) {
-							txtValue = td[j].textContent || td[j].innerText;
-							if (txtValue.toUpperCase().indexOf(filter) > -1) {
-								found = true;
-								break;
-							}
+		}
+
+		function updatecontrol(itemcode, productname, unit, price, qty) {
+			document.getElementById('itemcode').value = itemcode;
+			document.getElementById('old_itemcode').value = itemcode;
+			document.getElementById('itemcode').readOnly = false;
+			document.getElementById('productname').value = productname;
+			document.getElementById('unit').value = unit;
+			document.getElementById('price').value = price;
+			document.getElementById('qty').value = qty;
+			document.getElementById('edit').value = '1';
+			document.getElementById('modal-title').innerText = 'Edit Product';
+			modalcontrol('mymodal', 'block');
+		}
+
+		function resetForm() {
+			document.getElementById('itemcode').readOnly = false;
+			document.getElementById('old_itemcode').value = '';
+			document.getElementById('edit').value = '0';
+			document.getElementById('modal-title').innerText = 'Add New Product';
+			document.getElementById('itemcode').value = '';
+			document.getElementById('productname').value = '';
+			document.getElementById('unit').value = '';
+			document.getElementById('price').value = '';
+			document.getElementById('qty').value = '';
+		}
+
+		function filterTable() {
+			var input, filter, table, tr, td, i, txtValue;
+			input = document.getElementById("searchInput");
+			filter = input.value.toUpperCase();
+			table = document.querySelector(".data-table");
+			if (!table) return;
+			tr = table.getElementsByTagName("tr");
+
+			for (i = 1; i < tr.length; i++) {
+				td = tr[i].getElementsByTagName("td");
+				var found = false;
+				for (var j = 0; j < td.length - 1; j++) {
+					if (td[j]) {
+						txtValue = td[j].textContent || td[j].innerText;
+						if (txtValue.toUpperCase().indexOf(filter) > -1) {
+							found = true;
+							break;
 						}
 					}
-					tr[i].style.display = found ? "" : "none";
 				}
+				tr[i].style.display = found ? "" : "none";
 			}
-			
-			var sortDirection = 'asc'; // Track sort direction
-			
-			function sortTableByItemCode() {
-				var table = document.getElementById("productTable");
-				if (!table) return;
-				
-				var tbody = table.querySelector("tbody");
-				if (!tbody) return;
-				
-				var rows = Array.from(tbody.querySelectorAll("tr"));
-				var sortIcon = document.getElementById("sortIcon");
-				var sortBtn = document.getElementById("sortBtn");
-				
-				// Toggle sort direction
-				if (sortDirection === 'asc') {
-					sortDirection = 'desc';
-					sortIcon.textContent = '↓';
+		}
+
+		var sortDirection = 'asc'; // Track sort direction
+
+		function sortTableByItemCode() {
+			var table = document.getElementById("productTable");
+			if (!table) return;
+
+			var tbody = table.querySelector("tbody");
+			if (!tbody) return;
+
+			var rows = Array.from(tbody.querySelectorAll("tr"));
+			var sortIcon = document.getElementById("sortIcon");
+			var sortBtn = document.getElementById("sortBtn");
+
+			// Toggle sort direction
+			if (sortDirection === 'asc') {
+				sortDirection = 'desc';
+				sortIcon.textContent = '↓';
+			} else {
+				sortDirection = 'asc';
+				sortIcon.textContent = '↑';
+			}
+
+			// Add active class
+			sortBtn.classList.add('active');
+
+			// Sort rows by item code (first column)
+			rows.sort(function (a, b) {
+				var aText = a.cells[0].textContent.trim();
+				var bText = b.cells[0].textContent.trim();
+
+				// Try to compare as numbers if possible
+				var aNum = parseFloat(aText);
+				var bNum = parseFloat(bText);
+
+				if (!isNaN(aNum) && !isNaN(bNum)) {
+					// Both are numbers
+					return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
 				} else {
-					sortDirection = 'asc';
-					sortIcon.textContent = '↑';
-				}
-				
-				// Add active class
-				sortBtn.classList.add('active');
-				
-				// Sort rows by item code (first column)
-				rows.sort(function(a, b) {
-					var aText = a.cells[0].textContent.trim();
-					var bText = b.cells[0].textContent.trim();
-					
-					// Try to compare as numbers if possible
-					var aNum = parseFloat(aText);
-					var bNum = parseFloat(bText);
-					
-					if (!isNaN(aNum) && !isNaN(bNum)) {
-						// Both are numbers
-						return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
+					// Compare as strings
+					if (sortDirection === 'asc') {
+						return aText.localeCompare(bText);
 					} else {
-						// Compare as strings
-						if (sortDirection === 'asc') {
-							return aText.localeCompare(bText);
-						} else {
-							return bText.localeCompare(aText);
-						}
+						return bText.localeCompare(aText);
 					}
-				});
-				
-				// Remove all rows from tbody
-				while (tbody.firstChild) {
-					tbody.removeChild(tbody.firstChild);
 				}
-				
-				// Append sorted rows
-				rows.forEach(function(row) {
-					tbody.appendChild(row);
-				});
+			});
+
+			// Remove all rows from tbody
+			while (tbody.firstChild) {
+				tbody.removeChild(tbody.firstChild);
 			}
-		</script>
-	</body>
+
+			// Append sorted rows
+			rows.forEach(function (row) {
+				tbody.appendChild(row);
+			});
+		}
+	</script>
+</body>
+
 </html>

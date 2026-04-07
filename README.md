@@ -166,4 +166,3 @@ Copyright © 2025, University of Cebu-CCS
 
 ## Author
 
-Developed for educational purposes.

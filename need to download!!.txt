@@ -1,0 +1,5 @@
+python -m venv venv
+pip install flask
+pip install debhelper
+pip install sqlalchemy
+pip install flash
