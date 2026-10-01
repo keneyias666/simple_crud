@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!--
+  TABLE 1 PAGE  (first master table)
+
+  CHANGE (words you see):
+    <h1>, <h2>, <label>, <th>  — copy from the questionnaire
+
+  CHANGE (must match database.sql and config.py):
+    name="T1_ID"      name="T1_COL1"  name="T1_COL2"  name="T1_COL3"  name="T1_SEARCH"
+    r['T1_ID']        r['T1_COL1']    ... same names
+
+  KEEP:
+    action="/manage/t1/save"   action="/manage/t1"   action="/manage/t1/delete"
+    name="mode"  name="old_pk"  name="pk"  name="searched"  name="update_id"  name="delete_id"
+
+  ADD A COLUMN: copy a <label> + <input> in section 1 and 2, and a <th> + <td> in 3 and 4.
+  REMOVE A COLUMN: delete those same lines.
+-->
+
+<h1>Table One Management</h1>
+
+
+<!-- ========== 1. ADD ========== -->
+<div class="panel">
+  <h2>1. Adding a Table One record</h2>
+  <form method="post" action="/manage/t1/save">
+    <input type="hidden" name="mode" value="add">
+
+    <label>Table One ID</label>
+    <input type="number" name="T1_ID" required>
+
+    <label>Column 1</label>
+    <input type="text" name="T1_COL1" required>
+
+    <label>Column 2</label>
+    <input type="text" name="T1_COL2" required>
+
+    <label>Column 3</label>
+    <input type="text" name="T1_COL3" required>
+
+    <label>Search Column</label>
+    <input type="text" name="T1_SEARCH" required>
+
+    <button type="submit">Add</button>
+  </form>
+</div>
+
+
+<!-- ========== 2. SEARCH / UPDATE ========== -->
+<div class="panel">
+  <h2>2. Searching/Updating a Table One record</h2>
+  <form method="get" action="/manage/t1">
+    <input type="hidden" name="searched" value="update">
+    <label>Table One ID</label>
+    <input type="text" name="update_id" value="{{ update_id }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if update_record %}
+  {% set r = update_record %}
+  <form method="post" action="/manage/t1/save">
+    <input type="hidden" name="mode" value="update">
+    <input type="hidden" name="old_pk" value="{{ r['T1_ID'] }}">
+
+    <label>Table One ID</label>
+    <input type="number" name="T1_ID" value="{{ r['T1_ID'] }}" required>
+
+    <label>Column 1</label>
+    <input type="text" name="T1_COL1" value="{{ r['T1_COL1'] }}" required>
+
+    <label>Column 2</label>
+    <input type="text" name="T1_COL2" value="{{ r['T1_COL2'] }}" required>
+
+    <label>Column 3</label>
+    <input type="text" name="T1_COL3" value="{{ r['T1_COL3'] }}" required>
+
+    <label>Search Column</label>
+    <input type="text" name="T1_SEARCH" value="{{ r['T1_SEARCH'] }}" required>
+
+    <button type="submit">Update</button>
+  </form>
+  {% endif %}
+</div>
+
+
+<!-- ========== 3. SEARCH / DELETE ========== -->
+<div class="panel">
+  <h2>3. Searching/Deleting a Table One record</h2>
+  <form method="get" action="/manage/t1">
+    <input type="hidden" name="searched" value="delete">
+    <label>Table One ID</label>
+    <input type="text" name="delete_id" value="{{ delete_id }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if delete_record %}
+  {% set r = delete_record %}
+  <table>
+    <tr><th>ID</th><th>Column 1</th><th>Column 2</th><th>Column 3</th><th>Search Column</th></tr>
+    <tr>
+      <td>{{ r['T1_ID'] }}</td>
+      <td>{{ r['T1_COL1'] }}</td>
+      <td>{{ r['T1_COL2'] }}</td>
+      <td>{{ r['T1_COL3'] }}</td>
+      <td>{{ r['T1_SEARCH'] }}</td>
+    </tr>
+  </table>
+  <form method="post" action="/manage/t1/delete" onsubmit="return confirm('Delete this record?');">
+    <input type="hidden" name="pk" value="{{ r['T1_ID'] }}">
+    <button type="submit">Delete</button>
+  </form>
+  {% endif %}
+</div>
+
+
+<!-- ========== 4. VIEW ========== -->
+<div class="panel">
+  <h2>4. Viewing of Table One records</h2>
+  <p class="count">COUNT(*) = {{ total }}</p>
+  <table>
+    <tr><th>ID</th><th>Column 1</th><th>Column 2</th><th>Column 3</th><th>Search Column</th></tr>
+    {% for r in all_rows %}
+    <tr>
+      <td>{{ r['T1_ID'] }}</td>
+      <td>{{ r['T1_COL1'] }}</td>
+      <td>{{ r['T1_COL2'] }}</td>
+      <td>{{ r['T1_COL3'] }}</td>
+      <td>{{ r['T1_SEARCH'] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endblock %}

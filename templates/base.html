@@ -2,30 +2,35 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Clinic Consultations Logging System</title>
+  <title>SYSTEM NAME</title>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body>
 
-  <!-- TOP MENU: change the system name and link text here -->
+  <!--
+    CHANGE:
+      - SYSTEM NAME (title and the bold line)
+      - the words of the 4 links (Doctors Management, etc.)
+    KEEP:
+      href="/"  href="/manage/t1"  href="/manage/t2"  href="/manage/t3"  href="/inquiry"
+  -->
   <div class="topbar">
-    <b>Clinic Consultations Logging System</b><br>
+    <b>SYSTEM NAME</b><br>
     <a href="/">Menu</a>
-    <a href="/manage/doctor">Doctors Management</a>
-    <a href="/manage/patient">Patients Management</a>
-    <a href="/manage/consultation">Consultations Transaction Management</a>
-    <a href="/inquiry">Consultations Inquiry</a>
+    <a href="/manage/t1">Table One Management</a>
+    <a href="/manage/t2">Table Two Management</a>
+    <a href="/manage/t3">Table Three Transaction Management</a>
+    <a href="/inquiry">Inquiry</a>
   </div>
 
   <div class="page">
-    <!-- success / error messages -->
     {% for category, message in get_flashed_messages(with_categories=true) %}
       <p class="{{ category }}">{{ message }}</p>
     {% endfor %}
 
     {% if not tables_ready %}
       <p class="error">Database not ready. Missing: {{ db_missing|join(', ') }}<br>
-      Run: .\sqlite3.exe clinic.db ".read clinic.sql"</p>
+      Run: .\sqlite3.exe database.db ".read database.sql"</p>
     {% endif %}
 
     {% block content %}{% endblock %}

@@ -223,7 +223,7 @@ def save_record(key):
     if not entity:
         abort(404)
     if not dbhelper.tables_ready():
-        flash("Create the tables in clinic.sql first, then paste that file into sqlite.", "error")
+        flash("Create the tables first: .\\sqlite3.exe database.db \".read database.sql\"", "error")
         return redirect(url_for("manage", key=key))
     data, error = parse_form(entity, request.form)
     if error:
@@ -253,7 +253,7 @@ def remove_record(key):
     if not entity:
         abort(404)
     if not dbhelper.tables_ready():
-        flash("Create the tables in clinic.sql first, then paste that file into sqlite.", "error")
+        flash("Create the tables first: .\\sqlite3.exe database.db \".read database.sql\"", "error")
         return redirect(url_for("manage", key=key))
     raw = (request.form.get("pk") or "").strip()
     pk_field = config.pk_field(entity)
@@ -324,7 +324,7 @@ def inquiry():
     result = None
     ready = dbhelper.tables_ready()
     if kind and not ready:
-        flash("Create the tables in clinic.sql first, then paste that file into sqlite.", "error")
+        flash("Create the tables first: .\\sqlite3.exe database.db \".read database.sql\"", "error")
     elif kind:
         result, error = _run_inquiry(kind, request.args)
         if error:
@@ -353,6 +353,6 @@ if __name__ == "__main__":
     missing = dbhelper.what_is_missing()
     if missing:
         print("Database not ready. Missing:", ", ".join(missing))
-        print('Run:  .\\sqlite3.exe clinic.db ".read clinic.sql"')
+        print('Run:  .\\sqlite3.exe database.db ".read database.sql"')
     print("Open http://127.0.0.1:5000")
     app.run(debug=True)

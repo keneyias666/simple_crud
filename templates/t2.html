@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!--
+  TABLE 2 PAGE  (second master table — has a birth date for inquiry 2)
+
+  CHANGE (words you see):
+    <h1>, <h2>, <label>, <th>
+
+  CHANGE (must match database.sql and config.py):
+    name="T2_ID"  name="T2_COL1"  name="T2_COL2"  name="T2_BDATE"  name="T2_COL3"
+    r['T2_ID']    r['T2_COL1']    ... same names
+    type="date" on T2_BDATE  — keep as date if inquiry 2 is an age search
+
+  KEEP:
+    action="/manage/t2/save"   /manage/t2   /manage/t2/delete
+    name="mode"  name="old_pk"  name="pk"  name="searched"  name="update_id"  name="delete_id"
+-->
+
+<h1>Table Two Management</h1>
+
+
+<!-- ========== 1. ADD ========== -->
+<div class="panel">
+  <h2>1. Adding a Table Two record</h2>
+  <form method="post" action="/manage/t2/save">
+    <input type="hidden" name="mode" value="add">
+
+    <label>Table Two ID</label>
+    <input type="number" name="T2_ID" required>
+
+    <label>Column 1</label>
+    <input type="text" name="T2_COL1" required>
+
+    <label>Column 2</label>
+    <input type="text" name="T2_COL2" required>
+
+    <label>Birth Date</label>
+    <input type="date" name="T2_BDATE" required>
+
+    <label>Column 3</label>
+    <input type="text" name="T2_COL3" required>
+
+    <button type="submit">Add</button>
+  </form>
+</div>
+
+
+<!-- ========== 2. SEARCH / UPDATE ========== -->
+<div class="panel">
+  <h2>2. Searching/Updating a Table Two record</h2>
+  <form method="get" action="/manage/t2">
+    <input type="hidden" name="searched" value="update">
+    <label>Table Two ID</label>
+    <input type="text" name="update_id" value="{{ update_id }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if update_record %}
+  {% set r = update_record %}
+  <form method="post" action="/manage/t2/save">
+    <input type="hidden" name="mode" value="update">
+    <input type="hidden" name="old_pk" value="{{ r['T2_ID'] }}">
+
+    <label>Table Two ID</label>
+    <input type="number" name="T2_ID" value="{{ r['T2_ID'] }}" required>
+
+    <label>Column 1</label>
+    <input type="text" name="T2_COL1" value="{{ r['T2_COL1'] }}" required>
+
+    <label>Column 2</label>
+    <input type="text" name="T2_COL2" value="{{ r['T2_COL2'] }}" required>
+
+    <label>Birth Date</label>
+    <input type="date" name="T2_BDATE" value="{{ r['T2_BDATE'] }}" required>
+
+    <label>Column 3</label>
+    <input type="text" name="T2_COL3" value="{{ r['T2_COL3'] }}" required>
+
+    <button type="submit">Update</button>
+  </form>
+  {% endif %}
+</div>
+
+
+<!-- ========== 3. SEARCH / DELETE ========== -->
+<div class="panel">
+  <h2>3. Searching/Deleting a Table Two record</h2>
+  <form method="get" action="/manage/t2">
+    <input type="hidden" name="searched" value="delete">
+    <label>Table Two ID</label>
+    <input type="text" name="delete_id" value="{{ delete_id }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if delete_record %}
+  {% set r = delete_record %}
+  <table>
+    <tr><th>ID</th><th>Column 1</th><th>Column 2</th><th>Birth Date</th><th>Column 3</th></tr>
+    <tr>
+      <td>{{ r['T2_ID'] }}</td>
+      <td>{{ r['T2_COL1'] }}</td>
+      <td>{{ r['T2_COL2'] }}</td>
+      <td>{{ r['T2_BDATE'] }}</td>
+      <td>{{ r['T2_COL3'] }}</td>
+    </tr>
+  </table>
+  <form method="post" action="/manage/t2/delete" onsubmit="return confirm('Delete this record?');">
+    <input type="hidden" name="pk" value="{{ r['T2_ID'] }}">
+    <button type="submit">Delete</button>
+  </form>
+  {% endif %}
+</div>
+
+
+<!-- ========== 4. VIEW ========== -->
+<div class="panel">
+  <h2>4. Viewing of Table Two records</h2>
+  <p class="count">COUNT(*) = {{ total }}</p>
+  <table>
+    <tr><th>ID</th><th>Column 1</th><th>Column 2</th><th>Birth Date</th><th>Column 3</th></tr>
+    {% for r in all_rows %}
+    <tr>
+      <td>{{ r['T2_ID'] }}</td>
+      <td>{{ r['T2_COL1'] }}</td>
+      <td>{{ r['T2_COL2'] }}</td>
+      <td>{{ r['T2_BDATE'] }}</td>
+      <td>{{ r['T2_COL3'] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endblock %}

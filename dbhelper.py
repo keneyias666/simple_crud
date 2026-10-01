@@ -1,5 +1,5 @@
 """
-Runs SQL against clinic.db. Tables come from clinic.sql; names come from config.py.
+Runs SQL against database.db. Tables come from database.sql; names come from config.py.
 Every list and every inquiry runs SELECT COUNT(*).
 """
 
@@ -73,7 +73,7 @@ def missing_columns(conn):
 
 
 def init_db():
-    """Open the database file. Tables are created from clinic.sql, not here."""
+    """Open the database file. Tables are created from database.sql, not here."""
     config.validate()
     os.makedirs(BASE_DIR, exist_ok=True)
     conn = connect()

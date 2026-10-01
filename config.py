@@ -1,100 +1,102 @@
 # =====================================================================
-#  config.py  =  WEBSITE LABELS
+#  config.py  =  THE COLUMN LIST THE APP SAVES AND SEARCHES
 #
-#  Change the words between "quotes" to match the questionnaire.
-#  Every "name" must be spelled exactly like the column in clinic.sql.
+#  Find-and-replace the UPPERCASE placeholders (TABLE_ONE, T1_ID, ...)
+#  with the names from the questionnaire. Use the SAME names in
+#  database.sql and in templates/*.html.
+#
+#  Do NOT change the "key" values (t1, t2, t3). They are the page
+#  addresses (/manage/t1) and the HTML file names (t1.html).
 #
 #  Field options:
-#    "name"     column name in clinic.sql                  (MUST MATCH)
-#    "label"    words shown beside the input box           (anything)
+#    "name"     column name in database.sql                (MUST MATCH)
+#    "label"    words used in messages                     (anything)
 #    "input"    "text" | "number" | "date" | "datetime-local" | "textarea"
-#    "inquiry"  "text" -> inquiry 1 searches this column   (in PARENTS[0])
-#               "age"  -> inquiry 2 uses this birth date   (in PARENTS[1])
-#               "date" -> inquiry 5 uses this date         (in TRANSACTION)
-#    "fk"       the "key" of the table this column points to (TRANSACTION only)
+#    "inquiry"  "text" -> inquiry 1 searches this column   (TABLE 1)
+#               "age"  -> inquiry 2 uses this birth date   (TABLE 2)
+#               "date" -> inquiry 5 uses this date         (TABLE 3)
+#    "fk"       on TABLE 3: which table this column points to ("t1" or "t2")
 # =====================================================================
 
 import re
 from datetime import datetime
 
-# ---------------- SYSTEM -------------------------------------------------
 SYSTEM = {
-    "name": "Clinic Consultations Logging System",          # CHANGE: system name
-    "database": "Clinic",                                    # CHANGE: database name
-    "db_file": "clinic.db",                                  # sqlite file (keep)
-    "tagline": "A simple Clinic Consultations Logging System.",
+    "name": "SYSTEM NAME",                  # CHANGE: system name on the sheet
+    "database": "DATABASE NAME",            # CHANGE: database name on the sheet
+    "db_file": "database.db",               # keep
+    "tagline": "",
     "school": "University of Cebu (UC-Main) — College of Computer Studies",
 }
 
 PARENTS = [
     # ---------------- TABLE 1 (first master table) -----------------------
     {
-        "key": "doctor",                     # CHANGE: short id, lowercase
-        "table": "doctor",                   # CHANGE: table name in clinic.sql
-        "pk": "docID",                       # CHANGE: primary key column
-        "singular": "Doctor",                # CHANGE
-        "plural": "Doctors",                 # CHANGE
-        "menu": "Doctors Management",        # CHANGE: menu text
-        "fields": [                          # CHANGE: one line per column
-            {"name": "docID", "label": "Doctor's License or ID Number", "input": "number"},
-            {"name": "docFName", "label": "Doctor's First Name", "input": "text"},
-            {"name": "docLName", "label": "Doctor's Last Name", "input": "text"},
-            {"name": "docAddress", "label": "Doctor's Address", "input": "text"},
-            {"name": "docSpecial", "label": "Doctor's Specialization", "input": "text", "inquiry": "text"},
+        "key": "t1",                         # do not change
+        "table": "TABLE_ONE",                # CHANGE: table name
+        "pk": "T1_ID",                       # CHANGE: primary key column
+        "singular": "Table One",             # CHANGE: used in messages
+        "plural": "Table Ones",
+        "menu": "Table One Management",
+        "fields": [
+            {"name": "T1_ID", "label": "Table One ID", "input": "number"},
+            {"name": "T1_COL1", "label": "Table One Column 1", "input": "text"},
+            {"name": "T1_COL2", "label": "Table One Column 2", "input": "text"},
+            {"name": "T1_COL3", "label": "Table One Column 3", "input": "text"},
+            {"name": "T1_SEARCH", "label": "Table One Search Column", "input": "text", "inquiry": "text"},
         ],
     },
     # ---------------- TABLE 2 (second master table) ----------------------
     {
-        "key": "patient",
-        "table": "patient",
-        "pk": "patID",
-        "singular": "Patient",
-        "plural": "Patients",
-        "menu": "Patients Management",
+        "key": "t2",                         # do not change
+        "table": "TABLE_TWO",
+        "pk": "T2_ID",
+        "singular": "Table Two",
+        "plural": "Table Twos",
+        "menu": "Table Two Management",
         "fields": [
-            {"name": "patID", "label": "Patient's ID Number", "input": "number"},
-            {"name": "patFName", "label": "Patient's First Name", "input": "text"},
-            {"name": "patLName", "label": "Patient's Last Name", "input": "text"},
-            {"name": "patBDate", "label": "Patient's Birth Date", "input": "date", "inquiry": "age"},
-            {"name": "patTelNo", "label": "Patient's Telephone Number", "input": "text"},
+            {"name": "T2_ID", "label": "Table Two ID", "input": "number"},
+            {"name": "T2_COL1", "label": "Table Two Column 1", "input": "text"},
+            {"name": "T2_COL2", "label": "Table Two Column 2", "input": "text"},
+            {"name": "T2_BDATE", "label": "Table Two Birth Date", "input": "date", "inquiry": "age"},
+            {"name": "T2_COL3", "label": "Table Two Column 3", "input": "text"},
         ],
     },
 ]
 
 # ---------------- TABLE 3 (transaction table) ----------------------------
 TRANSACTION = {
-    "key": "consultation",
-    "table": "consultation",
-    "pk": "consultID",
-    "singular": "Consultation",
-    "plural": "Consultations",
-    "menu": "Consultations Transaction Management",
+    "key": "t3",                             # do not change
+    "table": "TABLE_THREE",
+    "pk": "T3_ID",
+    "singular": "Table Three",
+    "plural": "Table Threes",
+    "menu": "Table Three Transaction Management",
     "record": "transaction record",
     "fields": [
-        {"name": "consultID", "label": "Consultation Transaction Number", "input": "number"},
-        {"name": "patID", "label": "Patient's ID Number", "input": "number", "fk": "patient"},
-        {"name": "docID", "label": "Doctor's License or ID Number", "input": "number", "fk": "doctor"},
-        {"name": "consultDate", "label": "Consultation Date/Time", "input": "datetime-local", "inquiry": "date"},
-        {"name": "diagnosis", "label": "Doctor's Diagnosis Details for Patient", "input": "textarea"},
-        {"name": "prescription", "label": "Doctor's Prescription Details for Patient", "input": "textarea"},
+        {"name": "T3_ID", "label": "Table Three ID", "input": "number"},
+        {"name": "T2_ID", "label": "Table Two ID", "input": "number", "fk": "t2"},
+        {"name": "T1_ID", "label": "Table One ID", "input": "number", "fk": "t1"},
+        {"name": "T3_DATE", "label": "Table Three Date/Time", "input": "datetime-local", "inquiry": "date"},
+        {"name": "T3_COL1", "label": "Table Three Column 1", "input": "textarea"},
+        {"name": "T3_COL2", "label": "Table Three Column 2", "input": "textarea"},
     ],
 }
 
-# ---------------- INQUIRY PAGE TEXT (copy from the questionnaire) --------
 INQUIRY = {
-    "menu": "Consultations Inquiry",
-    "card": "Search by specialization, age, patient, doctor, or date.",
+    "menu": "Inquiry",
+    "card": "Five searches.",
     "note": "Each result uses COUNT(*).",
     "age_from": "From age",
     "age_to": "To age",
     "date_from": "From date",
     "date_to": "To date",
     "prompts": {
-        "text": "Displays all Doctors with a particular/specified specialization",
-        "age": "Displays all Patients from age ___ to age ___",
-        "by_b": "Displays all of consultations related to a particular/specified patient ID",
-        "by_a": "Displays all of consultations related to a particular/specified doctor ID",
-        "date": "Displays all Consultations from specified date ___ to date ___",
+        "text": "Inquiry 1",
+        "age": "Inquiry 2",
+        "by_b": "Inquiry 3",
+        "by_a": "Inquiry 4",
+        "date": "Inquiry 5",
     },
 }
 

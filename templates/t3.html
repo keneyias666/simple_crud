@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!--
+  TABLE 3 PAGE  (transaction table — links TABLE 1 and TABLE 2)
+
+  CHANGE (words you see):
+    <h1>, <h2>, <label>, <th>
+
+  CHANGE (must match database.sql and config.py):
+    name="T3_ID"  name="T2_ID"  name="T1_ID"  name="T3_DATE"  name="T3_COL1"  name="T3_COL2"
+    r['T3_ID']    r['T2_ID']    ... same names
+    choices.get('T2_ID', [])   and   choices.get('T1_ID', [])
+    — those two keys must be the FK column names
+
+  KEEP:
+    action="/manage/t3/save"   /manage/t3   /manage/t3/delete
+    name="mode"  name="old_pk"  name="pk"  name="searched"  name="update_id"  name="delete_id"
+    type="datetime-local" on the date field if the sheet says datetime (use type="date" if it says date)
+-->
+
+<h1>Table Three Transaction Management</h1>
+
+
+<!-- ========== 1. ADD ========== -->
+<div class="panel">
+  <h2>1. Adding a Table Three transaction record</h2>
+  <form method="post" action="/manage/t3/save">
+    <input type="hidden" name="mode" value="add">
+
+    <label>Table Three ID</label>
+    <input type="number" name="T3_ID" required>
+
+    <label>Table Two ID</label>
+    <select name="T2_ID" required>
+      <option value="">-- select --</option>
+      {% for x in choices.get('T2_ID', []) %}
+      <option value="{{ x.id }}">{{ x.id }} - {{ x.label }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Table One ID</label>
+    <select name="T1_ID" required>
+      <option value="">-- select --</option>
+      {% for x in choices.get('T1_ID', []) %}
+      <option value="{{ x.id }}">{{ x.id }} - {{ x.label }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Date/Time</label>
+    <input type="datetime-local" name="T3_DATE" required>
+
+    <label>Column 1</label>
+    <textarea name="T3_COL1" required></textarea>
+
+    <label>Column 2</label>
+    <textarea name="T3_COL2" required></textarea>
+
+    <button type="submit">Add</button>
+  </form>
+</div>
+
+
+<!-- ========== 2. SEARCH / UPDATE ========== -->
+<div class="panel">
+  <h2>2. Searching/Updating a Table Three transaction record</h2>
+  <form method="get" action="/manage/t3">
+    <input type="hidden" name="searched" value="update">
+    <label>Table Three ID</label>
+    <input type="text" name="update_id" value="{{ update_id }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if update_record %}
+  {% set r = update_record %}
+  <form method="post" action="/manage/t3/save">
+    <input type="hidden" name="mode" value="update">
+    <input type="hidden" name="old_pk" value="{{ r['T3_ID'] }}">
+
+    <label>Table Three ID</label>
+    <input type="number" name="T3_ID" value="{{ r['T3_ID'] }}" required>
+
+    <label>Table Two ID</label>
+    <select name="T2_ID" required>
+      {% for x in choices.get('T2_ID', []) %}
+      <option value="{{ x.id }}" {% if x.id == r['T2_ID'] %}selected{% endif %}>{{ x.id }} - {{ x.label }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Table One ID</label>
+    <select name="T1_ID" required>
+      {% for x in choices.get('T1_ID', []) %}
+      <option value="{{ x.id }}" {% if x.id == r['T1_ID'] %}selected{% endif %}>{{ x.id }} - {{ x.label }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Date/Time</label>
+    <input type="datetime-local" name="T3_DATE" value="{{ r['T3_DATE']|replace(' ', 'T') }}" required>
+
+    <label>Column 1</label>
+    <textarea name="T3_COL1" required>{{ r['T3_COL1'] }}</textarea>
+
+    <label>Column 2</label>
+    <textarea name="T3_COL2" required>{{ r['T3_COL2'] }}</textarea>
+
+    <button type="submit">Update</button>
+  </form>
+  {% endif %}
+</div>
+
+
+<!-- ========== 3. SEARCH / DELETE ========== -->
+<div class="panel">
+  <h2>3. Searching/Deleting a Table Three transaction record</h2>
+  <form method="get" action="/manage/t3">
+    <input type="hidden" name="searched" value="delete">
+    <label>Table Three ID</label>
+    <input type="text" name="delete_id" value="{{ delete_id }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if delete_record %}
+  {% set r = delete_record %}
+  <table>
+    <tr><th>ID</th><th>Table Two ID</th><th>Table One ID</th><th>Date/Time</th><th>Column 1</th><th>Column 2</th></tr>
+    <tr>
+      <td>{{ r['T3_ID'] }}</td>
+      <td>{{ r['T2_ID'] }}</td>
+      <td>{{ r['T1_ID'] }}</td>
+      <td>{{ r['T3_DATE'] }}</td>
+      <td>{{ r['T3_COL1'] }}</td>
+      <td>{{ r['T3_COL2'] }}</td>
+    </tr>
+  </table>
+  <form method="post" action="/manage/t3/delete" onsubmit="return confirm('Delete this record?');">
+    <input type="hidden" name="pk" value="{{ r['T3_ID'] }}">
+    <button type="submit">Delete</button>
+  </form>
+  {% endif %}
+</div>
+
+
+<!-- ========== 4. VIEW ========== -->
+<div class="panel">
+  <h2>4. Viewing of Table Three transaction records</h2>
+  <p class="count">COUNT(*) = {{ total }}</p>
+  {% include "_t3_rows.html" %}
+</div>
+
+{% endblock %}

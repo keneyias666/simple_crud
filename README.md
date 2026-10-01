@@ -1,31 +1,30 @@
-# Skills Test CRUD System (Flask + SQLite)
+# Empty skills-test template (Flask + SQLite)
 
-A simple menu website with add, search/update, search/delete, view, and 5 inquiries. Every result shows `COUNT(*)`.
-It is set up for the **Clinic Consultations Logging System**.
+This is a **blank** CRUD website with a menu. There are 3 empty tables and 5 inquiry searches.
+Every list shows `COUNT(*)`. Names are placeholders. When you get the questionnaire, you rename them.
 
-**Files you edit when the questionnaire changes:**
-
-| File | What it is |
-| --- | --- |
-| `clinic.sql` | **The database.** Table names and column names. |
-| `config.py` | **The column list the app saves and searches.** |
-| `templates/*.html` | **The pages.** Plain HTML: titles, labels, input boxes, table columns. |
-
-The column names must be the **same** in all three.
+Repo: https://github.com/keneyias666/simple_crud
 
 ---
 
-## 1. Download the project (clone)
+## 1. Download (clone)
 
-Open **PowerShell** and type:
+1. Install Git if needed: https://git-scm.com/download/win
+2. Open **PowerShell**.
+3. Go to your Desktop:
 
 ```powershell
 cd $HOME\Desktop
+```
+
+4. Download the project:
+
+```powershell
 git clone https://github.com/keneyias666/simple_crud.git
 cd simple_crud
 ```
 
-If the test says the folder name must be your family name:
+5. If the sheet says the folder must be your family name:
 
 ```powershell
 cd $HOME\Desktop
@@ -33,11 +32,20 @@ Rename-Item simple_crud YourFamilyName
 cd YourFamilyName
 ```
 
-No Git? Open the GitHub page → **Code** → **Download ZIP** → extract it → open PowerShell inside the folder.
+No Git? On GitHub click **Code → Download ZIP**, extract it, then open PowerShell inside that folder.
+
+Already cloned? Update it:
+
+```powershell
+cd $HOME\Desktop\simple_crud
+git pull
+```
 
 ---
 
-## 2. Install (one time)
+## 2. One-time Python setup
+
+Need Python 3.8+ (tick **Add python.exe to PATH** when installing).
 
 ```powershell
 python -m venv vnv
@@ -45,29 +53,38 @@ python -m venv vnv
 pip install -r requirements.txt
 ```
 
-- If `python` is not found, use `py` instead.
-- If `Activate.ps1` is blocked, run this once, then try again:
-  `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+- If `python` is not found, use `py` instead of `python`.
+- If `Activate.ps1` is blocked, run this once, then activate again:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+You should see `(vnv)` at the start of the line.
 
 ---
 
-## 3. Create the tables
+## 3. Create the empty tables
+
+The website does **not** create tables by itself. You create them from `database.sql`.
 
 ```powershell
-.\sqlite3.exe clinic.db ".read clinic.sql"
+.\sqlite3.exe database.db ".read database.sql"
 ```
 
-Optional, to add practice data:
+Check:
 
 ```powershell
-.\sqlite3.exe clinic.db ".read sample_data.sql"
+.\sqlite3.exe database.db ".tables"
 ```
 
-Check the result:
+You should see:
 
-```powershell
-.\sqlite3.exe clinic.db ".tables"
+```text
+TABLE_ONE    TABLE_THREE  TABLE_TWO
 ```
+
+All counts are 0 until you add rows (from the website or from `sample_data.sql`).
 
 ---
 
@@ -77,29 +94,65 @@ Check the result:
 python app.py
 ```
 
-Open **http://127.0.0.1:5000**. Stop it with **Ctrl+C**.
+Open **http://127.0.0.1:5000**
+
+Stop with **Ctrl+C**.
+
+### What you should see
+
+Top bar on every page:
+
+- Menu
+- Table One Management
+- Table Two Management
+- Table Three Transaction Management
+- Inquiry
+
+| Page | What to do |
+| --- | --- |
+| Table One / Two / Three | 1 Add, 2 Search then Update, 3 Search then Delete, 4 View (`COUNT(*)`) |
+| Inquiry | 5 searches. Each result shows `COUNT(*)` |
+
+On Table Three, the two ID boxes are drop-downs. Add Table One and Table Two rows first.
+
+You cannot delete a Table One / Table Two row while a Table Three row still uses that ID.
 
 ---
 
-## 5. How to make tables (for any system)
+## 5. If the questionnaire is a different system
 
-A table looks like this:
+The app always has this shape. Only the **names** change.
 
-```sql
-CREATE TABLE tablename (
-  idColumn   INTEGER PRIMARY KEY,
-  column2    TEXT,
-  column3    TEXT
-);
+| Slot | Placeholder names | Meaning |
+| --- | --- | --- |
+| TABLE 1 | `TABLE_ONE`, `T1_ID`, `T1_COL1` … `T1_SEARCH` | First master table. Inquiry 1 searches `T1_SEARCH`. |
+| TABLE 2 | `TABLE_TWO`, `T2_ID` … `T2_BDATE` | Second master table. Inquiry 2 uses birth date `T2_BDATE`. |
+| TABLE 3 | `TABLE_THREE`, `T3_ID`, `T2_ID`, `T1_ID`, `T3_DATE` | Transaction. Points to TABLE 1 and TABLE 2. Inquiry 5 uses `T3_DATE`. |
+
+**Do not change:** `t1` `t2` `t3` and the URLs `/manage/t1` `/manage/t2` `/manage/t3` `/inquiry`.
+**Do change:** the words on the page and every `TABLE_ONE` / `T1_ID` style name.
+
+You edit **the same names** in these files:
+
+1. `database.sql`
+2. `config.py`
+3. HTML in `templates/`
+4. (optional) `queries.sql` and `sample_data.sql`
+
+Then rebuild:
+
+```powershell
+.\sqlite3.exe database.db ".read database.sql"
+python app.py
 ```
 
-A column that points to another table:
+If a name does not match, the page shows a red **Database not ready. Missing: ...** line.
 
-```sql
-  otherID INTEGER REFERENCES othertable(otherID),
-```
+### 5.1 `database.sql` (the tables)
 
-Types to use:
+Open `database.sql`. Replace `TABLE_ONE`, `TABLE_TWO`, `TABLE_THREE` and every column name.
+
+Types from the sheet:
 
 | Sheet says | Write |
 | --- | --- |
@@ -108,244 +161,114 @@ Types to use:
 | date | `DATE` |
 | datetime | `DATETIME` |
 | PK | `INTEGER PRIMARY KEY` |
-| FK | `INTEGER REFERENCES table(column)` |
+| FK | `INTEGER REFERENCES other_table(other_id)` |
 
-`clinic.sql` has 3 tables:
+Add a column: copy a line. Remove a column: delete the line. Keep TABLE 3 last in `CREATE` and first in `DROP`.
 
-- **TABLE 1**: first master table (Doctor)
-- **TABLE 2**: second master table (Patient, which has a birth date)
-- **TABLE 3**: transaction table (Consultation, which points to table 1 and table 2 and has a date)
+### 5.2 `config.py` (save and search)
 
----
+Replace the same table and column names. Also change:
 
-## 6. Change to a different system (step by step)
-
-Example: the sheet says **Library**, with tables **Book**, **Borrower**, and **Loan**.
-
-### Step 1: Edit `clinic.sql`
-
-Rename the tables and columns:
-
-```sql
-DROP TABLE IF EXISTS loan;
-DROP TABLE IF EXISTS borrower;
-DROP TABLE IF EXISTS book;
-
--- TABLE 1
-CREATE TABLE book (
-  bookID     INTEGER PRIMARY KEY,
-  bookTitle  TEXT,
-  bookAuthor TEXT,
-  bookGenre  TEXT
-);
-
--- TABLE 2
-CREATE TABLE borrower (
-  brwID    INTEGER PRIMARY KEY,
-  brwFName TEXT,
-  brwLName TEXT,
-  brwBDate DATE,
-  brwTelNo TEXT
-);
-
--- TABLE 3
-CREATE TABLE loan (
-  loanID   INTEGER PRIMARY KEY,
-  brwID    INTEGER REFERENCES borrower(brwID),
-  bookID   INTEGER REFERENCES book(bookID),
-  loanDate DATETIME,
-  remarks  TEXT
-);
-```
-
-### Step 2: Edit `config.py`
-
-Change the words in the `# CHANGE` lines. Each table has a block like this:
-
-```python
-{
-    "key": "book",                 # short name, lowercase
-    "table": "book",               # same as in clinic.sql
-    "pk": "bookID",                # the PRIMARY KEY column
-    "singular": "Book",
-    "plural": "Books",
-    "menu": "Books Management",    # text on the menu
-    "fields": [
-        {"name": "bookID",     "label": "Book ID",     "input": "number"},
-        {"name": "bookTitle",  "label": "Book Title",  "input": "text"},
-        {"name": "bookAuthor", "label": "Book Author", "input": "text"},
-        {"name": "bookGenre",  "label": "Book Genre",  "input": "text", "inquiry": "text"},
-    ],
-},
-```
-
-What to write in each field:
-
-| Key | Meaning |
+| Setting | What it is |
 | --- | --- |
-| `name` | Column name. **Must match `clinic.sql`.** |
-| `label` | Words shown on the page |
-| `input` | `number`, `text`, `date`, `datetime-local`, or `textarea` (long text) |
-| `"inquiry": "text"` | Put on **one** column of TABLE 1. Inquiry 1 searches it. |
-| `"inquiry": "age"` | Put on the **birth date** of TABLE 2. Inquiry 2 uses it. |
-| `"inquiry": "date"` | Put on the **date** of TABLE 3. Inquiry 5 uses it. |
-| `"fk": "book"` | Put on TABLE 3 columns that point to another table. Use that table's `key`. |
+| `SYSTEM["name"]` | System name |
+| `SYSTEM["database"]` | Database name on the sheet |
+| `table` | Must equal the SQL table name |
+| `pk` | Must equal the primary key column |
+| `singular` / `plural` / `menu` | Words in messages |
+| `fields` → `name` | Must equal the SQL column name |
+| `fields` → `label` | Words in error messages |
+| `fields` → `input` | `number`, `text`, `date`, `datetime-local`, or `textarea` |
+| `"inquiry": "text"` | Keep on the TABLE 1 search column |
+| `"inquiry": "age"` | Keep on the TABLE 2 birth-date column |
+| `"inquiry": "date"` | Keep on the TABLE 3 date column |
+| `"fk": "t1"` / `"fk": "t2"` | Keep on TABLE 3 ID columns. Do not change `t1`/`t2`. |
 
-TABLE 3 example:
+Do **not** change `"key": "t1"` `"t2"` `"t3"`.
 
-```python
-"fields": [
-    {"name": "loanID",   "label": "Loan Number",    "input": "number"},
-    {"name": "brwID",    "label": "Borrower ID",    "input": "number", "fk": "borrower"},
-    {"name": "bookID",   "label": "Book ID",        "input": "number", "fk": "book"},
-    {"name": "loanDate", "label": "Loan Date/Time", "input": "datetime-local", "inquiry": "date"},
-    {"name": "remarks",  "label": "Remarks",        "input": "textarea"},
-],
-```
+### 5.3 HTML files (what you see)
 
-Also change `SYSTEM` (system name) at the top of `config.py`.
+Each HTML file has a **CHANGE / KEEP** comment at the top. Read that first.
 
-### Step 3: Edit the HTML pages
+| File | Page | What to change |
+| --- | --- | --- |
+| `templates/base.html` | Top bar on every page | `SYSTEM NAME` and the 4 link **words**. Keep the `href="/manage/t1"` etc. |
+| `templates/menu.html` | Home menu | Link **words**. Keep the `href`. |
+| `templates/t1.html` | TABLE 1 | Labels, headings, `name="T1_..."`, `r['T1_...']` |
+| `templates/t2.html` | TABLE 2 | Same, with `T2_...` |
+| `templates/t3.html` | TABLE 3 | Same, plus `choices.get('T2_ID')` / `choices.get('T1_ID')` |
+| `templates/inquiry.html` | 5 searches | Headings, labels, `r['...']` table cells |
+| `templates/_t3_rows.html` | TABLE 3 result table | Header words and `r['T3_...']` |
+| `static/css/app.css` | Look | Colors and sizes only |
 
-See [section 8](#8-edit-the-html). Rename the page files (`doctor.html` → `book.html`), then change the labels, `name="..."`, and `r['...']` inside them.
-
-### Step 4: Rebuild and run
-
-```powershell
-.\sqlite3.exe clinic.db ".read clinic.sql"
-python app.py
-```
-
-If something does not match, the website shows a red message saying exactly which table or column is missing.
-
----
-
-## 7. Database queries
-
-Open sqlite:
-
-```powershell
-.\sqlite3.exe clinic.db
-```
-
-All of these are in `queries.sql`. Change the names and values to match your tables.
-
-```sql
--- Add
-INSERT INTO doctor VALUES (1006, 'Rosa', 'Cruz', 'Cebu City', 'Neurology');
-
--- Search
-SELECT * FROM doctor WHERE docID = 1006;
-
--- Update
-UPDATE doctor SET docAddress = 'Lahug' WHERE docID = 1006;
-
--- Delete
-DELETE FROM doctor WHERE docID = 1006;
-
--- View with COUNT
-SELECT COUNT(*) AS total FROM doctor;
-SELECT * FROM doctor;
-
--- Inquiry 1: by text
-SELECT COUNT(*) AS total FROM doctor WHERE docSpecial = 'Cardiology';
-
--- Inquiry 2: age range
-SELECT COUNT(*) AS total FROM patient
-WHERE (strftime('%Y','now') - strftime('%Y', patBDate)) BETWEEN 20 AND 40;
-
--- Inquiry 3: by patient ID
-SELECT COUNT(*) AS total FROM consultation WHERE patID = 2001;
-
--- Inquiry 4: by doctor ID
-SELECT COUNT(*) AS total FROM consultation WHERE docID = 1001;
-
--- Inquiry 5: date range
-SELECT COUNT(*) AS total FROM consultation
-WHERE date(consultDate) BETWEEN '2026-01-01' AND '2026-03-31';
-```
-
-The inquiry 2 query only subtracts years, so it can be off by one before someone's birthday. The website uses the exact age.
-
-Useful sqlite commands:
-
-| Command | Does |
-| --- | --- |
-| `.tables` | List tables |
-| `.schema` | Show how the tables were made |
-| `.headers on` and `.mode column` | Show results as a readable table |
-| `.read file.sql` | Run a file |
-| `.quit` | Exit |
-
----
-
-## 8. Edit the HTML
-
-The pages are plain HTML in `templates/`. Every label, input box, and table column is written out.
-
-| File | What it shows |
-| --- | --- |
-| `base.html` | System name and the top menu on every page |
-| `menu.html` | Menu page (list of links) |
-| `doctor.html` | TABLE 1 page: 1 Add, 2 Search/Update, 3 Search/Delete, 4 View |
-| `patient.html` | TABLE 2 page (same 4 parts) |
-| `consultation.html` | TABLE 3 page (same 4 parts, with drop-downs for the IDs) |
-| `inquiry.html` | The 5 inquiries |
-| `_consult_rows.html` | TABLE 3 results table used by inquiries 3, 4, 5 |
-| `static/css/app.css` | Colors, borders, sizes |
-
-**The page file name must be the table's `key` from `config.py`.** Example: `"key": "book"` → `templates/book.html`, opened at `/manage/book`.
-
-### What to change in a page
+Example of one field on `t1.html`:
 
 ```html
-<label>Doctor's First Name</label>              <!-- 1. the label: any words -->
-<input type="text" name="docFName" required>    <!-- 2. name="..." must be the column name -->
-
-<td>{{ r['docFName'] }}</td>                    <!-- 3. r['...'] must be the column name -->
-
-<form method="post" action="/manage/doctor/save">   <!-- 4. /manage/<key>/ must be the table key -->
+<label>Table One ID</label>                 <!-- CHANGE: any words from the sheet -->
+<input type="number" name="T1_ID" required> <!-- CHANGE: name="T1_ID" to the real column -->
+<td>{{ r['T1_ID'] }}</td>                   <!-- CHANGE: T1_ID to the same column -->
 ```
 
-| Thing in the HTML | Change it to |
-| --- | --- |
-| Text in `<h1>`, `<h2>`, `<label>`, `<th>` | Any words from the questionnaire |
-| `name="docFName"` | The column name in `clinic.sql` |
-| `r['docFName']` | The column name in `clinic.sql` |
-| `/manage/doctor` | `/manage/<key>` |
-| `type="text"` / `number` / `date` / `datetime-local` | The input type for that column |
-| `choices['patID']` (drop-down on the transaction page) | `choices['<fk column name>']` |
+**Leave these `name=` values alone** (they are not database columns):
 
-### Adding or removing a column
+- `mode` `old_pk` `pk` `searched` `update_id` `delete_id`
+- Inquiry: `kind` `value` `age_from` `age_to` `date_from` `date_to`
+- Inquiry `kind` values: `text` `age` `by_b` `by_a` `date`
 
-1. Add or remove it in `clinic.sql`.
-2. Add or remove the line in `fields` in `config.py`.
-3. In the page file, add or remove the `<label>` + `<input>` pair in **1. ADD** and **2. UPDATE**, and the `<th>` + `<td>` pair in **3. DELETE** and **4. VIEW**.
+### 5.4 Add or remove a column
 
-### Do not change
+Do all three:
 
-- `name="mode"`, `name="old_pk"`, `name="pk"`, `name="searched"`, `name="update_id"`, `name="delete_id"`
-- In `inquiry.html`: `name="kind"` and its values (`text`, `age`, `by_b`, `by_a`, `date`), plus `name="value"`, `age_from`, `age_to`, `date_from`, `date_to`
-- Lines with `{% ... %}` (they repeat rows and show/hide parts)
+1. `database.sql` — add or delete the column line.
+2. `config.py` — add or delete the `{ "name": "...", "label": "...", "input": "..." }` line.
+3. The table’s HTML file — add or delete the `<label>` + `<input>` in **Add** and **Update**, and the `<th>` + `<td>` in **Delete** and **View**. For TABLE 3 also edit `_t3_rows.html`.
+
+### 5.5 Queries (optional)
+
+`queries.sql` has COUNT searches you can paste into sqlite. Rename the tables/columns the same way.
+
+```powershell
+.\sqlite3.exe database.db
+.read queries.sql
+.quit
+```
+
+`sample_data.sql` is empty on purpose. Uncomment and rename the INSERT lines if you want practice rows.
 
 ---
 
-## 9. If something goes wrong
+## 6. Skills-test day (short)
+
+1. Login as the sheet says (Local Admin).
+2. `git clone https://github.com/keneyias666/simple_crud.git` then rename the folder if needed.
+3. `python -m venv vnv` → `.\vnv\Scripts\Activate.ps1` → `pip install -r requirements.txt`
+4. Rename placeholders in `database.sql`, `config.py`, and `templates/` to match the sheet.
+5. `.\sqlite3.exe database.db ".read database.sql"`
+6. `python app.py` → http://127.0.0.1:5000
+7. Add a few rows, then show Add / Search-Update / Search-Delete / View / 5 inquiries.
+
+---
+
+## 7. Troubleshooting
 
 | Problem | Fix |
 | --- | --- |
-| Red "Database not ready" message | Run `.\sqlite3.exe clinic.db ".read clinic.sql"`, then reload the page |
-| It says a column is missing | The name in `config.py` is different from `clinic.sql`. Make them the same. |
-| `No module named flask` | Run `.\vnv\Scripts\Activate.ps1`, then `pip install -r requirements.txt` |
-| Cannot delete a Doctor or Patient | A Consultation still uses it. Delete the Consultation first. |
-| Database is locked | Close sqlite (`.quit`) and stop the app (Ctrl+C), then try again |
+| Red “Database not ready” | `.\sqlite3.exe database.db ".read database.sql"` |
+| Missing column | Same spelling in `database.sql`, `config.py`, and the HTML `name=` / `r['...']` |
+| `python` not found | Use `py` |
+| `No module named flask` | Activate `vnv`, then `pip install -r requirements.txt` |
+| `Activate.ps1` blocked | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
+| `sqlite3.exe` not found | Run the command inside the project folder |
+| Cannot delete a TABLE 1/2 row | Delete the TABLE 3 rows that use that ID first |
+| Port 5000 in use | Stop the other `python app.py` with Ctrl+C |
+| Inquiry 1 is 0 | Exact match. Type the full value, not a partial word |
 
 ---
 
-## 10. Save your changes to GitHub
+## 8. Push your own changes (optional)
 
 ```powershell
 git add .
-git commit -m "my changes"
+git commit -m "describe the change"
 git push
 ```

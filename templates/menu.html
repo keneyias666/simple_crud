@@ -1,13 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Menu</h1>
+<!--
+  MENU PAGE
+  CHANGE: the words inside each <a>...</a>
+  KEEP:   href="/manage/t1"  /manage/t2  /manage/t3  /inquiry
+-->
 
+<h1>Menu</h1>
 <ul>
-  <li><a href="/manage/doctor">Doctors Management</a></li>
-  <li><a href="/manage/patient">Patients Management</a></li>
-  <li><a href="/manage/consultation">Consultations Transaction Management</a></li>
-  <li><a href="/inquiry">Consultations Inquiry</a></li>
+  <li><a href="/manage/t1">Table One Management</a></li>
+  <li><a href="/manage/t2">Table Two Management</a></li>
+  <li><a href="/manage/t3">Table Three Transaction Management</a></li>
+  <li><a href="/inquiry">Inquiry</a></li>
 </ul>
 
 {% endblock %}

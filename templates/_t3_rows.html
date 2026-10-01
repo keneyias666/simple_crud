@@ -1,0 +1,19 @@
+<!--
+  TABLE 3 result rows. Used by t3.html (section 4) and inquiry.html (3, 4, 5).
+
+  CHANGE: the <th> words, and r['T3_ID'] r['T2_ID'] r['T1_ID'] r['T3_DATE'] r['T3_COL1'] r['T3_COL2']
+  KEEP: the for-loop line
+-->
+<table>
+  <tr><th>ID</th><th>Table Two ID</th><th>Table One ID</th><th>Date/Time</th><th>Column 1</th><th>Column 2</th></tr>
+  {% for r in (result.rows if result else all_rows) %}
+  <tr>
+    <td>{{ r['T3_ID'] }}</td>
+    <td>{{ r['T2_ID'] }}</td>
+    <td>{{ r['T1_ID'] }}</td>
+    <td>{{ r['T3_DATE'] }}</td>
+    <td>{{ r['T3_COL1'] }}</td>
+    <td>{{ r['T3_COL2'] }}</td>
+  </tr>
+  {% endfor %}
+</table>

@@ -1,49 +1,49 @@
--- =====================================================================
---  queries.sql  =  QUERIES TO COPY AND PASTE
---  Open:  .\sqlite3.exe clinic.db
---  Paste one query at a time. Change the table names, column names,
---  and the values to match your database.
--- =====================================================================
+-- Copy-paste queries. Open:  .\sqlite3.exe database.db
+-- Replace TABLE_ONE / TABLE_TWO / TABLE_THREE and the column names first.
 
 .headers on
 .mode column
 
--- ---------- ADD ----------
-INSERT INTO doctor VALUES (1006, 'Rosa', 'Cruz', '7 Banilad Rd, Cebu City', 'Neurology');
+-- ADD
+-- INSERT INTO TABLE_ONE VALUES (1, '', '', '', '');
 
--- ---------- SEARCH ----------
-SELECT * FROM doctor WHERE docID = 1006;
+-- SEARCH
+-- SELECT * FROM TABLE_ONE WHERE T1_ID = 1;
 
--- ---------- UPDATE ----------
-UPDATE doctor SET docAddress = '9 Lahug, Cebu City' WHERE docID = 1006;
+-- UPDATE
+-- UPDATE TABLE_ONE SET T1_COL1 = '' WHERE T1_ID = 1;
 
--- ---------- DELETE ----------
-DELETE FROM doctor WHERE docID = 1006;
+-- DELETE
+-- DELETE FROM TABLE_ONE WHERE T1_ID = 1;
 
--- ---------- VIEW (with COUNT) ----------
-SELECT COUNT(*) AS total FROM doctor;
-SELECT * FROM doctor;
+-- VIEW with COUNT
+SELECT COUNT(*) AS total FROM TABLE_ONE;
+SELECT * FROM TABLE_ONE;
 
--- ---------- INQUIRY 1: doctors with a specialization ----------
-SELECT COUNT(*) AS total FROM doctor WHERE docSpecial = 'Cardiology';
-SELECT * FROM doctor WHERE docSpecial = 'Cardiology';
+SELECT COUNT(*) AS total FROM TABLE_TWO;
+SELECT * FROM TABLE_TWO;
 
--- ---------- INQUIRY 2: patients from age 20 to 40 ----------
-SELECT COUNT(*) AS total FROM patient
-WHERE (strftime('%Y','now') - strftime('%Y', patBDate)) BETWEEN 20 AND 40;
-SELECT * FROM patient
-WHERE (strftime('%Y','now') - strftime('%Y', patBDate)) BETWEEN 20 AND 40;
+SELECT COUNT(*) AS total FROM TABLE_THREE;
+SELECT * FROM TABLE_THREE;
 
--- ---------- INQUIRY 3: consultations of a patient ID ----------
-SELECT COUNT(*) AS total FROM consultation WHERE patID = 2001;
-SELECT * FROM consultation WHERE patID = 2001;
+-- INQUIRY 1: TABLE 1 by text
+SELECT COUNT(*) AS total FROM TABLE_ONE WHERE T1_SEARCH = '';
+SELECT * FROM TABLE_ONE WHERE T1_SEARCH = '';
 
--- ---------- INQUIRY 4: consultations of a doctor ID ----------
-SELECT COUNT(*) AS total FROM consultation WHERE docID = 1001;
-SELECT * FROM consultation WHERE docID = 1001;
+-- INQUIRY 2: TABLE 2 by age
+SELECT COUNT(*) AS total FROM TABLE_TWO
+WHERE (strftime('%Y','now') - strftime('%Y', T2_BDATE)) BETWEEN 0 AND 120;
 
--- ---------- INQUIRY 5: consultations from date to date ----------
-SELECT COUNT(*) AS total FROM consultation
-WHERE date(consultDate) BETWEEN '2026-01-01' AND '2026-03-31';
-SELECT * FROM consultation
-WHERE date(consultDate) BETWEEN '2026-01-01' AND '2026-03-31';
+-- INQUIRY 3: TABLE 3 by TABLE 2 id
+SELECT COUNT(*) AS total FROM TABLE_THREE WHERE T2_ID = 1;
+SELECT * FROM TABLE_THREE WHERE T2_ID = 1;
+
+-- INQUIRY 4: TABLE 3 by TABLE 1 id
+SELECT COUNT(*) AS total FROM TABLE_THREE WHERE T1_ID = 1;
+SELECT * FROM TABLE_THREE WHERE T1_ID = 1;
+
+-- INQUIRY 5: TABLE 3 by date
+SELECT COUNT(*) AS total FROM TABLE_THREE
+WHERE date(T3_DATE) BETWEEN '2026-01-01' AND '2026-12-31';
+SELECT * FROM TABLE_THREE
+WHERE date(T3_DATE) BETWEEN '2026-01-01' AND '2026-12-31';

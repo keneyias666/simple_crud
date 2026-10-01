@@ -2,21 +2,36 @@
 {% block content %}
 
 <!--
-  INQUIRY PAGE
-  Change the sentences, labels, and r['...'] column names to match the questionnaire.
-  Each form sends "kind" (text / age / by_b / by_a / date). Do not change those words.
+  INQUIRY PAGE  (five searches; each result uses COUNT(*))
+
+  CHANGE (words you see):
+    <h1>, <h2>, <label>, <th>, the <p> under the title
+
+  CHANGE (must match database.sql):
+    Inquiry 1 table cells: r['T1_ID'] r['T1_COL1'] ... r['T1_SEARCH']
+    Inquiry 2 table cells: r['T2_ID'] ... r['T2_BDATE']  and r['age'] (keep age)
+    Inquiries 3–5: file _t3_rows.html
+
+  KEEP:
+    kind="text"   inquiry 1
+    kind="age"    inquiry 2
+    kind="by_b"   inquiry 3  (by TABLE 2 id)
+    kind="by_a"   inquiry 4  (by TABLE 1 id)
+    kind="date"   inquiry 5
+    name="value"  name="age_from"  name="age_to"  name="date_from"  name="date_to"
+    action="/inquiry"
 -->
 
-<h1>Consultations Inquiry</h1>
-<p>All results use the aggregate function COUNT.</p>
+<h1>Inquiry</h1>
+<p>All results use COUNT(*).</p>
 
 
-<!-- ========== 1. Doctors with a specialization ========== -->
+<!-- ========== 1. Search TABLE 1 by text ========== -->
 <div class="panel">
-  <h2>1. Displays all Doctors with a particular/specified specialization</h2>
+  <h2>1. Inquiry 1 (search TABLE 1 by text)</h2>
   <form method="get" action="/inquiry">
     <input type="hidden" name="kind" value="text">
-    <label>Specialization</label>
+    <label>Search value</label>
     <input type="text" name="value" value="{{ filters.get('value', '') if kind == 'text' }}">
     <button type="submit">Search</button>
   </form>
@@ -24,11 +39,14 @@
   {% if result and result.kind == 'text' %}
   <p class="count">COUNT(*) = {{ result.count }}</p>
   <table>
-    <tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Address</th><th>Specialization</th></tr>
+    <tr><th>ID</th><th>Column 1</th><th>Column 2</th><th>Column 3</th><th>Search Column</th></tr>
     {% for r in result.rows %}
     <tr>
-      <td>{{ r['docID'] }}</td><td>{{ r['docFName'] }}</td><td>{{ r['docLName'] }}</td>
-      <td>{{ r['docAddress'] }}</td><td>{{ r['docSpecial'] }}</td>
+      <td>{{ r['T1_ID'] }}</td>
+      <td>{{ r['T1_COL1'] }}</td>
+      <td>{{ r['T1_COL2'] }}</td>
+      <td>{{ r['T1_COL3'] }}</td>
+      <td>{{ r['T1_SEARCH'] }}</td>
     </tr>
     {% endfor %}
   </table>
@@ -36,9 +54,9 @@
 </div>
 
 
-<!-- ========== 2. Patients from age to age ========== -->
+<!-- ========== 2. Search TABLE 2 by age ========== -->
 <div class="panel">
-  <h2>2. Displays all Patients from age ___ to age ___</h2>
+  <h2>2. Inquiry 2 (TABLE 2 from age ___ to age ___)</h2>
   <form method="get" action="/inquiry">
     <input type="hidden" name="kind" value="age">
     <label>From age</label>
@@ -51,11 +69,14 @@
   {% if result and result.kind == 'age' %}
   <p class="count">COUNT(*) = {{ result.count }}</p>
   <table>
-    <tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Birth Date</th><th>Age</th></tr>
+    <tr><th>ID</th><th>Column 1</th><th>Column 2</th><th>Birth Date</th><th>Age</th></tr>
     {% for r in result.rows %}
     <tr>
-      <td>{{ r['patID'] }}</td><td>{{ r['patFName'] }}</td><td>{{ r['patLName'] }}</td>
-      <td>{{ r['patBDate'] }}</td><td>{{ r['age'] }}</td>
+      <td>{{ r['T2_ID'] }}</td>
+      <td>{{ r['T2_COL1'] }}</td>
+      <td>{{ r['T2_COL2'] }}</td>
+      <td>{{ r['T2_BDATE'] }}</td>
+      <td>{{ r['age'] }}</td>
     </tr>
     {% endfor %}
   </table>
@@ -63,43 +84,43 @@
 </div>
 
 
-<!-- ========== 3. Consultations of a patient ID ========== -->
+<!-- ========== 3. TABLE 3 by TABLE 2 id ========== -->
 <div class="panel">
-  <h2>3. Displays all of consultations related to a particular/specified patient ID</h2>
+  <h2>3. Inquiry 3 (TABLE 3 related to a TABLE 2 ID)</h2>
   <form method="get" action="/inquiry">
     <input type="hidden" name="kind" value="by_b">
-    <label>Patient's ID Number</label>
+    <label>Table Two ID</label>
     <input type="number" name="value" value="{{ filters.get('value', '') if kind == 'by_b' }}">
     <button type="submit">Search</button>
   </form>
 
   {% if result and result.kind == 'by_b' %}
   <p class="count">COUNT(*) = {{ result.count }}</p>
-  {% include "_consult_rows.html" %}
+  {% include "_t3_rows.html" %}
   {% endif %}
 </div>
 
 
-<!-- ========== 4. Consultations of a doctor ID ========== -->
+<!-- ========== 4. TABLE 3 by TABLE 1 id ========== -->
 <div class="panel">
-  <h2>4. Displays all of consultations related to a particular/specified doctor ID</h2>
+  <h2>4. Inquiry 4 (TABLE 3 related to a TABLE 1 ID)</h2>
   <form method="get" action="/inquiry">
     <input type="hidden" name="kind" value="by_a">
-    <label>Doctor's License or ID Number</label>
+    <label>Table One ID</label>
     <input type="number" name="value" value="{{ filters.get('value', '') if kind == 'by_a' }}">
     <button type="submit">Search</button>
   </form>
 
   {% if result and result.kind == 'by_a' %}
   <p class="count">COUNT(*) = {{ result.count }}</p>
-  {% include "_consult_rows.html" %}
+  {% include "_t3_rows.html" %}
   {% endif %}
 </div>
 
 
-<!-- ========== 5. Consultations from date to date ========== -->
+<!-- ========== 5. TABLE 3 by date range ========== -->
 <div class="panel">
-  <h2>5. Displays all Consultations from specified date ___ to date ___</h2>
+  <h2>5. Inquiry 5 (TABLE 3 from date ___ to date ___)</h2>
   <form method="get" action="/inquiry">
     <input type="hidden" name="kind" value="date">
     <label>From date</label>
@@ -111,7 +132,7 @@
 
   {% if result and result.kind == 'date' %}
   <p class="count">COUNT(*) = {{ result.count }}</p>
-  {% include "_consult_rows.html" %}
+  {% include "_t3_rows.html" %}
   {% endif %}
 </div>
 
