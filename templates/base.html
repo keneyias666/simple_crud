@@ -2,30 +2,32 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>{% block title %}{% endblock %} - {{ system.name }}</title>
+  <title>Clinic Consultations Logging System</title>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body>
 
-  <!-- TOP MENU (shown on every page) -->
+  <!-- TOP MENU: change the system name and link text here -->
   <div class="topbar">
-    <b>{{ system.name }}</b><br>
-    {% for item in nav %}
-      {% if item.endpoint == 'manage' %}
-        <a href="/manage/{{ item.key }}">{{ item.label }}</a>
-      {% else %}
-        <a href="{{ url_for(item.endpoint) }}">{{ item.label }}</a>
-      {% endif %}
-    {% endfor %}
+    <b>Clinic Consultations Logging System</b><br>
+    <a href="/">Menu</a>
+    <a href="/manage/doctor">Doctors Management</a>
+    <a href="/manage/patient">Patients Management</a>
+    <a href="/manage/consultation">Consultations Transaction Management</a>
+    <a href="/inquiry">Consultations Inquiry</a>
   </div>
 
   <div class="page">
-    <!-- Success / error messages -->
+    <!-- success / error messages -->
     {% for category, message in get_flashed_messages(with_categories=true) %}
       <p class="{{ category }}">{{ message }}</p>
     {% endfor %}
 
-    <!-- Each page puts its content here -->
+    {% if not tables_ready %}
+      <p class="error">Database not ready. Missing: {{ db_missing|join(', ') }}<br>
+      Run: .\sqlite3.exe clinic.db ".read clinic.sql"</p>
+    {% endif %}
+
     {% block content %}{% endblock %}
   </div>
 

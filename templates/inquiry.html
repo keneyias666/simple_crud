@@ -1,33 +1,118 @@
 {% extends "base.html" %}
-{% block title %}{{ inquiry.menu }}{% endblock %}
 {% block content %}
 
-<h1>{{ inquiry.menu }}</h1>
-<p>{{ inquiry.note }}</p>
-{% if not tables_ready %}{% include "_missing.html" %}{% endif %}
+<!--
+  INQUIRY PAGE
+  Change the sentences, labels, and r['...'] column names to match the questionnaire.
+  Each form sends "kind" (text / age / by_b / by_a / date). Do not change those words.
+-->
 
-<!-- The 5 searches. Their sentences come from INQUIRY["prompts"] in config.py. -->
-{% for panel in panels %}
+<h1>Consultations Inquiry</h1>
+<p>All results use the aggregate function COUNT.</p>
+
+
+<!-- ========== 1. Doctors with a specialization ========== -->
 <div class="panel">
-  <h2>{{ loop.index }}. {{ panel.title }}</h2>
-
+  <h2>1. Displays all Doctors with a particular/specified specialization</h2>
   <form method="get" action="/inquiry">
-    <input type="hidden" name="kind" value="{{ panel.kind }}">
-    {% for box in panel.inputs %}
-      <label>{{ box.label }}
-        <input type="{{ box.type }}" name="{{ box.name }}" value="{{ filters.get(box.name, '') }}">
-      </label>
-    {% endfor %}
+    <input type="hidden" name="kind" value="text">
+    <label>Specialization</label>
+    <input type="text" name="value" value="{{ filters.get('value', '') if kind == 'text' }}">
     <button type="submit">Search</button>
   </form>
 
-  {% if result and result.kind == panel.kind %}
-    <p class="count">COUNT(*) = {{ result.count }}</p>
-    {% set columns = result.columns %}
-    {% set rows = result.rows %}
-    {% include "_table.html" %}
+  {% if result and result.kind == 'text' %}
+  <p class="count">COUNT(*) = {{ result.count }}</p>
+  <table>
+    <tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Address</th><th>Specialization</th></tr>
+    {% for r in result.rows %}
+    <tr>
+      <td>{{ r['docID'] }}</td><td>{{ r['docFName'] }}</td><td>{{ r['docLName'] }}</td>
+      <td>{{ r['docAddress'] }}</td><td>{{ r['docSpecial'] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
   {% endif %}
 </div>
-{% endfor %}
+
+
+<!-- ========== 2. Patients from age to age ========== -->
+<div class="panel">
+  <h2>2. Displays all Patients from age ___ to age ___</h2>
+  <form method="get" action="/inquiry">
+    <input type="hidden" name="kind" value="age">
+    <label>From age</label>
+    <input type="number" name="age_from" value="{{ filters.get('age_from', '') }}">
+    <label>To age</label>
+    <input type="number" name="age_to" value="{{ filters.get('age_to', '') }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if result and result.kind == 'age' %}
+  <p class="count">COUNT(*) = {{ result.count }}</p>
+  <table>
+    <tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Birth Date</th><th>Age</th></tr>
+    {% for r in result.rows %}
+    <tr>
+      <td>{{ r['patID'] }}</td><td>{{ r['patFName'] }}</td><td>{{ r['patLName'] }}</td>
+      <td>{{ r['patBDate'] }}</td><td>{{ r['age'] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</div>
+
+
+<!-- ========== 3. Consultations of a patient ID ========== -->
+<div class="panel">
+  <h2>3. Displays all of consultations related to a particular/specified patient ID</h2>
+  <form method="get" action="/inquiry">
+    <input type="hidden" name="kind" value="by_b">
+    <label>Patient's ID Number</label>
+    <input type="number" name="value" value="{{ filters.get('value', '') if kind == 'by_b' }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if result and result.kind == 'by_b' %}
+  <p class="count">COUNT(*) = {{ result.count }}</p>
+  {% include "_consult_rows.html" %}
+  {% endif %}
+</div>
+
+
+<!-- ========== 4. Consultations of a doctor ID ========== -->
+<div class="panel">
+  <h2>4. Displays all of consultations related to a particular/specified doctor ID</h2>
+  <form method="get" action="/inquiry">
+    <input type="hidden" name="kind" value="by_a">
+    <label>Doctor's License or ID Number</label>
+    <input type="number" name="value" value="{{ filters.get('value', '') if kind == 'by_a' }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if result and result.kind == 'by_a' %}
+  <p class="count">COUNT(*) = {{ result.count }}</p>
+  {% include "_consult_rows.html" %}
+  {% endif %}
+</div>
+
+
+<!-- ========== 5. Consultations from date to date ========== -->
+<div class="panel">
+  <h2>5. Displays all Consultations from specified date ___ to date ___</h2>
+  <form method="get" action="/inquiry">
+    <input type="hidden" name="kind" value="date">
+    <label>From date</label>
+    <input type="date" name="date_from" value="{{ filters.get('date_from', '') }}">
+    <label>To date</label>
+    <input type="date" name="date_to" value="{{ filters.get('date_to', '') }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if result and result.kind == 'date' %}
+  <p class="count">COUNT(*) = {{ result.count }}</p>
+  {% include "_consult_rows.html" %}
+  {% endif %}
+</div>
 
 {% endblock %}

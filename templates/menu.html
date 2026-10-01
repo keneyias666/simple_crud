@@ -1,15 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Menu{% endblock %}
 {% block content %}
 
 <h1>Menu</h1>
-{% if not tables_ready %}{% include "_missing.html" %}{% endif %}
 
-<!-- Menu items come from config.py (each table's "menu", plus INQUIRY["menu"]). -->
 <ul>
-  {% for card in cards %}
-    <li><a href="{{ card.href }}">{{ card.title }}</a> ({{ card.caption }} = {{ card.count }})</li>
-  {% endfor %}
+  <li><a href="/manage/doctor">Doctors Management</a></li>
+  <li><a href="/manage/patient">Patients Management</a></li>
+  <li><a href="/manage/consultation">Consultations Transaction Management</a></li>
+  <li><a href="/inquiry">Consultations Inquiry</a></li>
 </ul>
 
 {% endblock %}

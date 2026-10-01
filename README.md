@@ -3,14 +3,15 @@
 A simple menu website with add, search/update, search/delete, view, and 5 inquiries. Every result shows `COUNT(*)`.
 It is set up for the **Clinic Consultations Logging System**.
 
-**You only edit 2 files:**
+**Files you edit when the questionnaire changes:**
 
 | File | What it is |
 | --- | --- |
 | `clinic.sql` | **The database.** Table names and column names. |
-| `config.py` | **The website words.** Menu names and labels. |
+| `config.py` | **The column list the app saves and searches.** |
+| `templates/*.html` | **The pages.** Plain HTML: titles, labels, input boxes, table columns. |
 
-The column names must be the **same** in both files.
+The column names must be the **same** in all three.
 
 ---
 
@@ -202,9 +203,13 @@ TABLE 3 example:
 ],
 ```
 
-Also change `SYSTEM` (system name) and `INQUIRY` (the 5 inquiry sentences) at the top and bottom of `config.py`.
+Also change `SYSTEM` (system name) at the top of `config.py`.
 
-### Step 3: Rebuild and run
+### Step 3: Edit the HTML pages
+
+See [section 8](#8-edit-the-html). Rename the page files (`doctor.html` → `book.html`), then change the labels, `name="..."`, and `r['...']` inside them.
+
+### Step 4: Rebuild and run
 
 ```powershell
 .\sqlite3.exe clinic.db ".read clinic.sql"
@@ -274,23 +279,54 @@ Useful sqlite commands:
 
 ---
 
-## 8. Edit the HTML (optional)
+## 8. Edit the HTML
 
-The pages are in `templates/`. Each one is short, and each section is marked with a comment.
+The pages are plain HTML in `templates/`. Every label, input box, and table column is written out.
 
 | File | What it shows |
 | --- | --- |
-| `base.html` | Top menu on every page and the success/error messages |
-| `menu.html` | Menu page |
-| `manage.html` | The 4 sections: 1 Add, 2 Search/Update, 3 Search/Delete, 4 View |
+| `base.html` | System name and the top menu on every page |
+| `menu.html` | Menu page (list of links) |
+| `doctor.html` | TABLE 1 page: 1 Add, 2 Search/Update, 3 Search/Delete, 4 View |
+| `patient.html` | TABLE 2 page (same 4 parts) |
+| `consultation.html` | TABLE 3 page (same 4 parts, with drop-downs for the IDs) |
 | `inquiry.html` | The 5 inquiries |
-| `_fields.html` | The input boxes (one per column) |
-| `_table.html` | The results table |
-| `_missing.html` | The red "Database not ready" message |
+| `_consult_rows.html` | TABLE 3 results table used by inquiries 3, 4, 5 |
 | `static/css/app.css` | Colors, borders, sizes |
 
-You do **not** type table or column names in the HTML. They come from `config.py`.
-Text inside `{{ }}` is filled in by the app. Plain text outside it can be edited freely, for example the words on the `Add` / `Search` / `Delete` buttons.
+**The page file name must be the table's `key` from `config.py`.** Example: `"key": "book"` → `templates/book.html`, opened at `/manage/book`.
+
+### What to change in a page
+
+```html
+<label>Doctor's First Name</label>              <!-- 1. the label: any words -->
+<input type="text" name="docFName" required>    <!-- 2. name="..." must be the column name -->
+
+<td>{{ r['docFName'] }}</td>                    <!-- 3. r['...'] must be the column name -->
+
+<form method="post" action="/manage/doctor/save">   <!-- 4. /manage/<key>/ must be the table key -->
+```
+
+| Thing in the HTML | Change it to |
+| --- | --- |
+| Text in `<h1>`, `<h2>`, `<label>`, `<th>` | Any words from the questionnaire |
+| `name="docFName"` | The column name in `clinic.sql` |
+| `r['docFName']` | The column name in `clinic.sql` |
+| `/manage/doctor` | `/manage/<key>` |
+| `type="text"` / `number` / `date` / `datetime-local` | The input type for that column |
+| `choices['patID']` (drop-down on the transaction page) | `choices['<fk column name>']` |
+
+### Adding or removing a column
+
+1. Add or remove it in `clinic.sql`.
+2. Add or remove the line in `fields` in `config.py`.
+3. In the page file, add or remove the `<label>` + `<input>` pair in **1. ADD** and **2. UPDATE**, and the `<th>` + `<td>` pair in **3. DELETE** and **4. VIEW**.
+
+### Do not change
+
+- `name="mode"`, `name="old_pk"`, `name="pk"`, `name="searched"`, `name="update_id"`, `name="delete_id"`
+- In `inquiry.html`: `name="kind"` and its values (`text`, `age`, `by_b`, `by_a`, `date`), plus `name="value"`, `age_from`, `age_to`, `date_from`, `date_to`
+- Lines with `{% ... %}` (they repeat rows and show/hide parts)
 
 ---
 

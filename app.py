@@ -164,7 +164,7 @@ def manage(key):
         abort(404)
     if not dbhelper.tables_ready():
         return render_template(
-            "manage.html",
+            f"{key}.html",
             entity=entity,
             titles=config.action_titles(entity),
             pk_field=config.pk_field(entity),
@@ -200,7 +200,7 @@ def manage(key):
         if field.get("fk"):
             choices[field["name"]] = dbhelper.choice_list(field["fk"])
     return render_template(
-        "manage.html",
+        f"{key}.html",
         entity=entity,
         titles=config.action_titles(entity),
         pk_field=config.pk_field(entity),
