@@ -1,0 +1,21 @@
+<!-- One input box per column. Labels and column names come from config.py. -->
+{% for field in entity.fields %}
+  <label>{{ field.label }}
+
+    {% if field.fk %}
+      <select name="{{ field.name }}" required>
+        <option value="">-- select --</option>
+        {% for opt in choices.get(field.name, []) %}
+          <option value="{{ opt.id }}" {% if record and record[field.name]|string == opt.id|string %}selected{% endif %}>{{ opt.id }} - {{ opt.label }}</option>
+        {% endfor %}
+      </select>
+
+    {% elif field.input == 'textarea' %}
+      <textarea name="{{ field.name }}" required>{{ input_value(record, field) }}</textarea>
+
+    {% else %}
+      <input type="{{ field.input }}" name="{{ field.name }}" value="{{ input_value(record, field) }}" required>
+    {% endif %}
+
+  </label>
+{% endfor %}

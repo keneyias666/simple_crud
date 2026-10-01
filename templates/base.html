@@ -1,32 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ system.name }}{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <title>{% block title %}{% endblock %} - {{ system.name }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body>
-  <header>
-    <strong>{{ system.name }}</strong>
-    <nav>
-      {% for item in nav %}
-        {% if item.endpoint == 'manage' %}
-          <a href="{{ url_for('manage', key=item.key) }}" {% if active == item.key %}aria-current="page"{% endif %}>{{ item.label }}</a>
-        {% else %}
-          <a href="{{ url_for(item.endpoint) }}" {% if active == item.key %}aria-current="page"{% endif %}>{{ item.label }}</a>
-        {% endif %}
-      {% endfor %}
-    </nav>
-  </header>
-  <main>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        <p class="flash {{ category }}">{{ message }}</p>
-      {% endfor %}
-    {% endwith %}
+
+  <!-- TOP MENU (shown on every page) -->
+  <div class="topbar">
+    <b>{{ system.name }}</b><br>
+    {% for item in nav %}
+      {% if item.endpoint == 'manage' %}
+        <a href="/manage/{{ item.key }}">{{ item.label }}</a>
+      {% else %}
+        <a href="{{ url_for(item.endpoint) }}">{{ item.label }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="page">
+    <!-- Success / error messages -->
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <p class="{{ category }}">{{ message }}</p>
+    {% endfor %}
+
+    <!-- Each page puts its content here -->
     {% block content %}{% endblock %}
-    <p class="foot">{{ system.school }}</p>
-  </main>
+  </div>
+
 </body>
 </html>

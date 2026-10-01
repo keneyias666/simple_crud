@@ -274,7 +274,27 @@ Useful sqlite commands:
 
 ---
 
-## 8. If something goes wrong
+## 8. Edit the HTML (optional)
+
+The pages are in `templates/`. Each one is short, and each section is marked with a comment.
+
+| File | What it shows |
+| --- | --- |
+| `base.html` | Top menu on every page and the success/error messages |
+| `menu.html` | Menu page |
+| `manage.html` | The 4 sections: 1 Add, 2 Search/Update, 3 Search/Delete, 4 View |
+| `inquiry.html` | The 5 inquiries |
+| `_fields.html` | The input boxes (one per column) |
+| `_table.html` | The results table |
+| `_missing.html` | The red "Database not ready" message |
+| `static/css/app.css` | Colors, borders, sizes |
+
+You do **not** type table or column names in the HTML. They come from `config.py`.
+Text inside `{{ }}` is filled in by the app. Plain text outside it can be edited freely, for example the words on the `Add` / `Search` / `Delete` buttons.
+
+---
+
+## 9. If something goes wrong
 
 | Problem | Fix |
 | --- | --- |
@@ -286,7 +306,7 @@ Useful sqlite commands:
 
 ---
 
-## 9. Save your changes to GitHub
+## 10. Save your changes to GitHub
 
 ```powershell
 git add .
