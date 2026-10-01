@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ system.name }}{% endblock %}
+{% block content %}
+  <h1>{{ inquiry.menu }}</h1>
+  <p>{{ inquiry.note }}</p>
+  {% if not tables_ready %}
+    {% include "_missing.html" %}
+  {% endif %}
+
+  {% for panel in panels %}
+    <section class="panel" id="panel-{{ panel.kind }}">
+      <h2><span>{{ loop.index }}</span> {{ panel.title }}</h2>
+      <form class="inline-form" method="get" action="{{ url_for('inquiry') }}#panel-{{ panel.kind }}">
+        <input type="hidden" name="kind" value="{{ panel.kind }}">
+        {% for field in panel.inputs %}
+          <label>
+            <span>{{ field.label }}</span>
+            <input type="{{ field.type }}" name="{{ field.name }}" value="{{ filters.get(field.name, '') }}" {% if field.type == 'number' %}step="1"{% endif %}>
+          </label>
+        {% endfor %}
+        <button class="btn primary" type="submit">Search</button>
+      </form>
+      {% if result and result.kind == panel.kind %}
+        <p class="count"><span>{{ result.summary }}</span><strong>COUNT(*) = {{ result.count }}</strong></p>
+        {% if result.rows %}
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  {% for col in result.columns %}
+                    <th>{{ col.label }}<small>{{ col.name }}</small></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in result.rows %}
+                  <tr>
+                    {% for col in result.columns %}
+                      <td>
+                        {{ row[col.name] }}
+                        {% if col.fk and names[col.fk].get(row[col.name]) %}
+                          <span class="who">{{ names[col.fk].get(row[col.name]) }}</span>
+                        {% endif %}
+                      </td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="empty">No records matched.</p>
+        {% endif %}
+      {% endif %}
+    </section>
+  {% endfor %}
+{% endblock %}

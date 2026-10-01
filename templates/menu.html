@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Menu · {{ system.name }}{% endblock %}
+{% block content %}
+  <h1>Menu</h1>
+  <p>{{ system.tagline }} Database: {{ system.database }}.</p>
+  {% if not tables_ready %}
+    {% include "_missing.html" %}
+  {% endif %}
+  <ul class="menu">
+    {% for card in cards %}
+      <li>
+        <a href="{{ card.href }}">{{ card.title }}</a>
+        — {{ card.text }}
+        <strong>{{ card.caption }} = {{ card.count }}</strong>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

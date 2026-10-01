@@ -1,0 +1,5 @@
+<p class="flash error">
+  Database not ready. Missing: <strong>{{ db_missing|join(', ') }}</strong>.<br>
+  Fix <strong>clinic.sql</strong> (tables) or <strong>config.py</strong> (names), then run
+  <code>.\sqlite3.exe clinic.db ".read clinic.sql"</code> and reload.
+</p>

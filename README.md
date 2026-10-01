@@ -1,168 +1,295 @@
-# CRUD Application
+# Skills Test CRUD System (Flask + SQLite)
 
-# FOR Virtual Environment Setup
+A simple menu website with add, search/update, search/delete, view, and 5 inquiries. Every result shows `COUNT(*)`.
+It is set up for the **Clinic Consultations Logging System**.
 
-- irm https://claude.ai/install.ps1 | iex
-- and also download ollama (irm https://ollama.com/install.ps1 | iex) or download manually and make sure you connect your device as well,
-  by selecting a deepseek cloud agent, and will reroute you to connect the device.
-- Download GIT as well (git clone <https://github.com/keneyias666/simple_crud>)
-- After installing the claude.ai to windows make sure  you go to
-  (Edit the System and Environment Variables) check the system variables and look for path and add the path,
-  that you installed the claude in.
-- ollama launch claude --model minimax-m2.5:cloud
+**You only edit 2 files:**
 
+| File | What it is |
+| --- | --- |
+| `clinic.sql` | **The database.** Table names and column names. |
+| `config.py` | **The website words.** Menu names and labels. |
 
-# FOR SQLITE AND QUERIES AND ALL
+The column names must be the **same** in both files.
 
-sqlite3 crud.db
-.databases (to verify)
-CREATE TABLE table_name ( column1 datatype, column2 datatype);
-FOREIGN KEY (trackartist) REFERENCES artist (artistid);
-DROP TABLE table_name;
-.quit
+---
 
-- DATA TYPES (INT)
-INT
-INTEGER
-TINYINT
-SMALLINT
-MEDIUMINT
-BIGINT
-UNSIGNED BIG INT
-INT2
-INT8
+## 1. Download the project (clone)
 
-- DATA TYPES (CHAR)
-CHARACTER(20)
-VARCHAR(255)
-VARYING CHARACTER(255)
-NCHAR(55)
-NATIVE CHARACTER(70)
-NVARCHAR(100)
-TEXT
-CLOB
+Open **PowerShell** and type:
 
-- DATA TYPES (REAL)
-REAL
-DOUBLE
-DOUBLE PRECISION
-FLOAT
-
-- DATA TYPES (NUMERIC)
-NUMERIC
-DECIMAL(10,5)
-BOOLEAN
-DATE
-DATETIME
-
-
-# CREATING VENV IN PYTHON
-
-python -m venv venv
-cd venv
-cd Scripts
-activate / deactivate
-
-
-# INSTALLING DEPENDENCIES NEEDED!!
-
-(pip install -r requirements.txt)
-pip install flask
-pip install debhelper
-pip install sqlalchemy
-pip install flash
-
-
-# FOR CSS SETUP W3 SCHOOLS
-https://www.w3schools.com/w3css/4/w3.css
-https://www.w3schools.com/w3css/5/w3.css
-
-
-A simple Flask-based CRUD (Create, Read, Update, Delete) application for managing products with a modern, responsive UI.
-
-## Features
-
-- ✅ Add, Edit, and Delete products
-- ✅ Editable item codes
-- ✅ Real-time search functionality
-- ✅ Sort items by item code (ascending/descending)
-- ✅ Color-coded notifications (green for success, red for errors)
-- ✅ Modern, responsive UI design
-- ✅ SQLite database for data storage
-
-## Installation
-
-### Prerequisites
-
-- Python 3.7 or higher
-- pip (Python package installer)
-
-### Setup Instructions
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/keneyias666/simple_crud.git
-   cd simple_crud
-   ```
-
-2. **Create a virtual environment (recommended)**
-   ```bash
-   # On Windows
-   python -m venv vnv
-   vnv\Scripts\activate
-   
-   # On Linux/Mac
-   python3 -m venv vnv
-   source vnv/bin/activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Run the application**
-   ```bash
-   python app.py
-   ```
-
-5. **Access the application**
-   - Open your browser and navigate to: `http://127.0.0.1:5000`
-
-## Project Structure
-
-```
-crud/
-├── app.py              # Main Flask application
-├── dbhelper.py         # Database helper functions
-├── crud.db             # SQLite database file
-├── requirements.txt    # Python dependencies
-├── templates/          # HTML templates
-│   ├── base.html       # Base template
-│   └── index.html      # Main page template
-└── static/            # Static files
-    ├── css/           # Stylesheets
-    └── images/        # Images and logos
+```powershell
+cd $HOME\Desktop
+git clone https://github.com/keneyias666/simple_crud.git
+cd simple_crud
 ```
 
-## Usage
+If the test says the folder name must be your family name:
 
-1. **Add a Product**: Click the "➕ Add New Product" button
-2. **Edit a Product**: Click the ✏️ edit button next to any product
-3. **Delete a Product**: Click the 🗑️ delete button next to any product
-4. **Search Products**: Use the search box to filter products in real-time
-5. **Sort by Item Code**: Click the sort button (⇅) in the ITEMCODE column header
+```powershell
+cd $HOME\Desktop
+Rename-Item simple_crud YourFamilyName
+cd YourFamilyName
+```
 
-## Technologies Used
+No Git? Open the GitHub page → **Code** → **Download ZIP** → extract it → open PowerShell inside the folder.
 
-- **Backend**: Flask (Python web framework)
-- **Database**: SQLite3
-- **Frontend**: HTML, CSS, JavaScript
-- **Styling**: W3.CSS framework
+---
 
-## License
+## 2. Install (one time)
 
-Copyright © 2025, University of Cebu-CCS
+```powershell
+python -m venv vnv
+.\vnv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-## Author
+- If `python` is not found, use `py` instead.
+- If `Activate.ps1` is blocked, run this once, then try again:
+  `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
 
+---
+
+## 3. Create the tables
+
+```powershell
+.\sqlite3.exe clinic.db ".read clinic.sql"
+```
+
+Optional, to add practice data:
+
+```powershell
+.\sqlite3.exe clinic.db ".read sample_data.sql"
+```
+
+Check the result:
+
+```powershell
+.\sqlite3.exe clinic.db ".tables"
+```
+
+---
+
+## 4. Run the website
+
+```powershell
+python app.py
+```
+
+Open **http://127.0.0.1:5000**. Stop it with **Ctrl+C**.
+
+---
+
+## 5. How to make tables (for any system)
+
+A table looks like this:
+
+```sql
+CREATE TABLE tablename (
+  idColumn   INTEGER PRIMARY KEY,
+  column2    TEXT,
+  column3    TEXT
+);
+```
+
+A column that points to another table:
+
+```sql
+  otherID INTEGER REFERENCES othertable(otherID),
+```
+
+Types to use:
+
+| Sheet says | Write |
+| --- | --- |
+| int | `INTEGER` |
+| text | `TEXT` |
+| date | `DATE` |
+| datetime | `DATETIME` |
+| PK | `INTEGER PRIMARY KEY` |
+| FK | `INTEGER REFERENCES table(column)` |
+
+`clinic.sql` has 3 tables:
+
+- **TABLE 1**: first master table (Doctor)
+- **TABLE 2**: second master table (Patient, which has a birth date)
+- **TABLE 3**: transaction table (Consultation, which points to table 1 and table 2 and has a date)
+
+---
+
+## 6. Change to a different system (step by step)
+
+Example: the sheet says **Library**, with tables **Book**, **Borrower**, and **Loan**.
+
+### Step 1: Edit `clinic.sql`
+
+Rename the tables and columns:
+
+```sql
+DROP TABLE IF EXISTS loan;
+DROP TABLE IF EXISTS borrower;
+DROP TABLE IF EXISTS book;
+
+-- TABLE 1
+CREATE TABLE book (
+  bookID     INTEGER PRIMARY KEY,
+  bookTitle  TEXT,
+  bookAuthor TEXT,
+  bookGenre  TEXT
+);
+
+-- TABLE 2
+CREATE TABLE borrower (
+  brwID    INTEGER PRIMARY KEY,
+  brwFName TEXT,
+  brwLName TEXT,
+  brwBDate DATE,
+  brwTelNo TEXT
+);
+
+-- TABLE 3
+CREATE TABLE loan (
+  loanID   INTEGER PRIMARY KEY,
+  brwID    INTEGER REFERENCES borrower(brwID),
+  bookID   INTEGER REFERENCES book(bookID),
+  loanDate DATETIME,
+  remarks  TEXT
+);
+```
+
+### Step 2: Edit `config.py`
+
+Change the words in the `# CHANGE` lines. Each table has a block like this:
+
+```python
+{
+    "key": "book",                 # short name, lowercase
+    "table": "book",               # same as in clinic.sql
+    "pk": "bookID",                # the PRIMARY KEY column
+    "singular": "Book",
+    "plural": "Books",
+    "menu": "Books Management",    # text on the menu
+    "fields": [
+        {"name": "bookID",     "label": "Book ID",     "input": "number"},
+        {"name": "bookTitle",  "label": "Book Title",  "input": "text"},
+        {"name": "bookAuthor", "label": "Book Author", "input": "text"},
+        {"name": "bookGenre",  "label": "Book Genre",  "input": "text", "inquiry": "text"},
+    ],
+},
+```
+
+What to write in each field:
+
+| Key | Meaning |
+| --- | --- |
+| `name` | Column name. **Must match `clinic.sql`.** |
+| `label` | Words shown on the page |
+| `input` | `number`, `text`, `date`, `datetime-local`, or `textarea` (long text) |
+| `"inquiry": "text"` | Put on **one** column of TABLE 1. Inquiry 1 searches it. |
+| `"inquiry": "age"` | Put on the **birth date** of TABLE 2. Inquiry 2 uses it. |
+| `"inquiry": "date"` | Put on the **date** of TABLE 3. Inquiry 5 uses it. |
+| `"fk": "book"` | Put on TABLE 3 columns that point to another table. Use that table's `key`. |
+
+TABLE 3 example:
+
+```python
+"fields": [
+    {"name": "loanID",   "label": "Loan Number",    "input": "number"},
+    {"name": "brwID",    "label": "Borrower ID",    "input": "number", "fk": "borrower"},
+    {"name": "bookID",   "label": "Book ID",        "input": "number", "fk": "book"},
+    {"name": "loanDate", "label": "Loan Date/Time", "input": "datetime-local", "inquiry": "date"},
+    {"name": "remarks",  "label": "Remarks",        "input": "textarea"},
+],
+```
+
+Also change `SYSTEM` (system name) and `INQUIRY` (the 5 inquiry sentences) at the top and bottom of `config.py`.
+
+### Step 3: Rebuild and run
+
+```powershell
+.\sqlite3.exe clinic.db ".read clinic.sql"
+python app.py
+```
+
+If something does not match, the website shows a red message saying exactly which table or column is missing.
+
+---
+
+## 7. Database queries
+
+Open sqlite:
+
+```powershell
+.\sqlite3.exe clinic.db
+```
+
+All of these are in `queries.sql`. Change the names and values to match your tables.
+
+```sql
+-- Add
+INSERT INTO doctor VALUES (1006, 'Rosa', 'Cruz', 'Cebu City', 'Neurology');
+
+-- Search
+SELECT * FROM doctor WHERE docID = 1006;
+
+-- Update
+UPDATE doctor SET docAddress = 'Lahug' WHERE docID = 1006;
+
+-- Delete
+DELETE FROM doctor WHERE docID = 1006;
+
+-- View with COUNT
+SELECT COUNT(*) AS total FROM doctor;
+SELECT * FROM doctor;
+
+-- Inquiry 1: by text
+SELECT COUNT(*) AS total FROM doctor WHERE docSpecial = 'Cardiology';
+
+-- Inquiry 2: age range
+SELECT COUNT(*) AS total FROM patient
+WHERE (strftime('%Y','now') - strftime('%Y', patBDate)) BETWEEN 20 AND 40;
+
+-- Inquiry 3: by patient ID
+SELECT COUNT(*) AS total FROM consultation WHERE patID = 2001;
+
+-- Inquiry 4: by doctor ID
+SELECT COUNT(*) AS total FROM consultation WHERE docID = 1001;
+
+-- Inquiry 5: date range
+SELECT COUNT(*) AS total FROM consultation
+WHERE date(consultDate) BETWEEN '2026-01-01' AND '2026-03-31';
+```
+
+The inquiry 2 query only subtracts years, so it can be off by one before someone's birthday. The website uses the exact age.
+
+Useful sqlite commands:
+
+| Command | Does |
+| --- | --- |
+| `.tables` | List tables |
+| `.schema` | Show how the tables were made |
+| `.headers on` and `.mode column` | Show results as a readable table |
+| `.read file.sql` | Run a file |
+| `.quit` | Exit |
+
+---
+
+## 8. If something goes wrong
+
+| Problem | Fix |
+| --- | --- |
+| Red "Database not ready" message | Run `.\sqlite3.exe clinic.db ".read clinic.sql"`, then reload the page |
+| It says a column is missing | The name in `config.py` is different from `clinic.sql`. Make them the same. |
+| `No module named flask` | Run `.\vnv\Scripts\Activate.ps1`, then `pip install -r requirements.txt` |
+| Cannot delete a Doctor or Patient | A Consultation still uses it. Delete the Consultation first. |
+| Database is locked | Close sqlite (`.quit`) and stop the app (Ctrl+C), then try again |
+
+---
+
+## 9. Save your changes to GitHub
+
+```powershell
+git add .
+git commit -m "my changes"
+git push
+```

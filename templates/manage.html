@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}{{ entity.menu }} · {{ system.name }}{% endblock %}
+{% block content %}
+  <h1>{{ entity.menu }}</h1>
+  {% if not tables_ready %}
+    {% include "_missing.html" %}
+  {% endif %}
+
+  {% macro fields(record) %}
+    <div class="form-grid">
+      {% for field in entity.fields %}
+        <label class="field {{ 'span-2' if field.input == 'textarea' else '' }}">
+          <span>{{ field.label }} <code>{{ field.name }}</code></span>
+          {% if field.fk %}
+            {% if not choices.get(field.name) %}
+              <span class="hint">Add a {{ labels[field.fk] }} before saving this record.</span>
+            {% endif %}
+            <select name="{{ field.name }}" required>
+              <option value="">Select</option>
+              {% for opt in choices.get(field.name, []) %}
+                <option value="{{ opt.id }}" {% if record and record[field.name]|string == opt.id|string %}selected{% endif %}>{{ opt.id }} — {{ opt.label }}</option>
+              {% endfor %}
+            </select>
+          {% elif field.input == 'textarea' %}
+            <textarea name="{{ field.name }}" required>{{ input_value(record, field) }}</textarea>
+          {% else %}
+            <input type="{{ field.input }}" name="{{ field.name }}" value="{{ input_value(record, field) }}" {% if field.input == 'number' %}step="1"{% endif %} required>
+          {% endif %}
+        </label>
+      {% endfor %}
+    </div>
+  {% endmacro %}
+
+  {% macro show(row, field) %}
+    {{ row[field.name] }}
+    {% if field.fk and names[field.fk].get(row[field.name]) %}
+      <span class="who">{{ names[field.fk].get(row[field.name]) }}</span>
+    {% endif %}
+  {% endmacro %}
+
+  <section class="panel">
+    <h2><span>1</span> {{ titles.add }}</h2>
+    <form method="post" action="{{ url_for('save_record', key=entity.key) }}" autocomplete="off">
+      <input type="hidden" name="mode" value="add">
+      {{ fields(none) }}
+      <div class="actions"><button class="btn primary" type="submit">Add {{ entity.singular }}</button></div>
+    </form>
+  </section>
+
+  <div class="split">
+    <section class="panel">
+      <h2><span>2</span> {{ titles.update }}</h2>
+      <p class="hint">Search by ID, then update the record.</p>
+      <form method="get" action="{{ url_for('manage', key=entity.key) }}">
+        <input type="hidden" name="searched" value="update">
+        {% if delete_id %}<input type="hidden" name="delete_id" value="{{ delete_id }}">{% endif %}
+        <div class="search-row">
+          <label>
+            <span>{{ pk_field.label }} <code>{{ pk_field.name }}</code></span>
+            <input type="{{ pk_field.input }}" name="update_id" value="{{ update_id }}">
+          </label>
+          <button class="btn primary" type="submit">Search</button>
+        </div>
+      </form>
+      {% if update_record %}
+        <form method="post" action="{{ url_for('save_record', key=entity.key) }}" autocomplete="off">
+          <input type="hidden" name="mode" value="update">
+          <input type="hidden" name="old_pk" value="{{ update_record[entity.pk] }}">
+          {{ fields(update_record) }}
+          <div class="actions">
+            <button class="btn primary" type="submit">Update {{ entity.singular }}</button>
+            <a class="btn" href="{{ url_for('manage', key=entity.key, delete_id=delete_id) if delete_id else url_for('manage', key=entity.key) }}">Clear</a>
+          </div>
+        </form>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <h2><span>3</span> {{ titles.delete }}</h2>
+      <p class="hint">Search by ID, then delete the record.</p>
+      <form method="get" action="{{ url_for('manage', key=entity.key) }}">
+        <input type="hidden" name="searched" value="delete">
+        {% if update_id %}<input type="hidden" name="update_id" value="{{ update_id }}">{% endif %}
+        <div class="search-row">
+          <label>
+            <span>{{ pk_field.label }} <code>{{ pk_field.name }}</code></span>
+            <input type="{{ pk_field.input }}" name="delete_id" value="{{ delete_id }}">
+          </label>
+          <button class="btn primary" type="submit">Search</button>
+        </div>
+      </form>
+      {% if delete_record %}
+        <dl class="record">
+          {% for field in entity.fields %}
+            <div>
+              <dt>{{ field.label }}</dt>
+              <dd>{{ show(delete_record, field) }}</dd>
+            </div>
+          {% endfor %}
+        </dl>
+        <form method="post" action="{{ url_for('remove_record', key=entity.key) }}" onsubmit="return confirm('Delete this record?');">
+          <input type="hidden" name="pk" value="{{ delete_record[entity.pk] }}">
+          <button class="btn danger" type="submit">Delete {{ entity.singular }}</button>
+        </form>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2><span>4</span> {{ titles.view }}</h2>
+    <p class="count"><span>{{ entity.plural }}</span><strong>COUNT(*) = {{ total }}</strong></p>
+    {% if rows %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              {% for field in entity.fields %}
+                <th>{{ field.label }}<small>{{ field.name }}</small></th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                {% for field in entity.fields %}
+                  <td>{{ show(row, field) }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No {{ entity.plural.lower() }} yet.</p>
+    {% endif %}
+  </section>
+{% endblock %}
