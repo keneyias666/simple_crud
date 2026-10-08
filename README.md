@@ -272,3 +272,26 @@ git add .
 git commit -m "describe the change"
 git push
 ```
+
+## 9. Must Note This on SQLITE3 Queries!!!
+
+"SAVING DATABASE QUERIES"
+
+sqlite> .save 'my_database.db'
+
+"CREATING TABLE WITH FOREIGN KEYS"
+
+CREATE TABLE DOCTOR (
+    doctor_id TEXT,  -- :x: Missing "PRIMARY KEY" or "UNIQUE" keyword here!
+    name TEXT
+);
+
+CREATE TABLE CONSULTATION (
+    id INTEGER PRIMARY KEY,
+    doc_id TEXT,
+    FOREIGN KEY(doc_id) REFERENCES DOCTOR(doctor_id)
+);
+
+"TURNING ON FOREIGN_KEY ON SQLITE3"
+sqlite3 your_database.db
+sqlite> PRAGMA foreign_keys = ON;
