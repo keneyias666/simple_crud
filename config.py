@@ -1,97 +1,115 @@
 # =====================================================================
 #  config.py  =  THE COLUMN LIST THE APP SAVES AND SEARCHES
+# =====================================================================
 #
-#  Find-and-replace the UPPERCASE placeholders (TABLE_ONE, T1_ID, ...)
-#  with the names from the questionnaire. Use the SAME names in
-#  database.sql and in templates/*.html.
+#  HOW TO USE THIS FILE
+#  --------------------
+#  1. Every line marked  # CHANGE  gets the real name from the sheet.
+#  2. Every line marked  # KEEP    stays exactly as it is.
+#  3. Column names ("name": ...) must be spelled EXACTLY like in
+#     database.sql and in the HTML files (name="..." and r['...']).
 #
-#  Do NOT change the "key" values (t1, t2, t3). They are the page
+#  EXAMPLE (Clinic sheet)
+#  ----------------------
+#     "table": "TABLE_ONE"        ->  "table": "doctor"
+#     {"name": "T1_ID", ...}      ->  {"name": "docID", ...}
+#     "label": "Table One ID"     ->  "label": "Doctor ID"
+#
+#  ADD / REMOVE A COLUMN
+#  ---------------------
+#     Copy or delete one {"name": ...} line inside "fields".
+#     Do the same in database.sql and the matching HTML file.
+#
+#  FIELD OPTIONS (inside each { ... } line)
+#  ----------------------------------------
+#     "name"     column name in database.sql              (MUST MATCH)
+#     "label"    words used in messages                   (any words)
+#     "input"    "text" | "number" | "date" | "datetime-local" | "textarea"
+#     "inquiry"  "text" -> Inquiry 1 searches this column  (TABLE 1 only)
+#                "age"  -> Inquiry 2 uses this birth date  (TABLE 2 only)
+#                "date" -> Inquiry 5 uses this date        (TABLE 3 only)
+#     "fk"       TABLE 3 only: "t1" or "t2" = the table this ID points to
+#
+#  NEVER CHANGE the "key" values (t1, t2, t3). They are the page
 #  addresses (/manage/t1) and the HTML file names (t1.html).
-#
-#  Field options:
-#    "name"     column name in database.sql                (MUST MATCH)
-#    "label"    words used in messages                     (anything)
-#    "input"    "text" | "number" | "date" | "datetime-local" | "textarea"
-#    "inquiry"  "text" -> inquiry 1 searches this column   (TABLE 1)
-#               "age"  -> inquiry 2 uses this birth date   (TABLE 2)
-#               "date" -> inquiry 5 uses this date         (TABLE 3)
-#    "fk"       on TABLE 3: which table this column points to ("t1" or "t2")
 # =====================================================================
 
 import re
 from datetime import datetime
 
+# ---------------- SYSTEM ---------------------------------------------
 SYSTEM = {
-    "name": "SYSTEM NAME",                  # CHANGE: system name on the sheet
-    "database": "DATABASE NAME",            # CHANGE: database name on the sheet
-    "db_file": "database.db",               # keep
-    "tagline": "",
-    "school": "University of Cebu (UC-Main) — College of Computer Studies",
+    "name": "SYSTEM NAME",                   # CHANGE: system name on the sheet
+    "database": "DATABASE NAME",             # CHANGE: database name on the sheet
+    "db_file": "database.db",                # KEEP
+    "tagline": "",                           # optional: small text under the title
+    "school": "University of Cebu (UC-Main) — College of Computer Studies",  # optional
 }
 
 PARENTS = [
-    # ---------------- TABLE 1 (first master table) -----------------------
+    # ---------------- TABLE 1 (first master table) -------------------
     {
-        "key": "t1",                         # do not change
+        "key": "t1",                         # KEEP
         "table": "TABLE_ONE",                # CHANGE: table name
         "pk": "T1_ID",                       # CHANGE: primary key column
-        "singular": "Table One",             # CHANGE: used in messages
-        "plural": "Table Ones",
-        "menu": "Table One Management",
-        "fields": [
-            {"name": "T1_ID", "label": "Table One ID", "input": "number"},
-            {"name": "T1_COL1", "label": "Table One Column 1", "input": "text"},
-            {"name": "T1_COL2", "label": "Table One Column 2", "input": "text"},
-            {"name": "T1_COL3", "label": "Table One Column 3", "input": "text"},
-            {"name": "T1_SEARCH", "label": "Table One Search Column", "input": "text", "inquiry": "text"},
+        "singular": "Table One",             # CHANGE: one record   (e.g. "Doctor")
+        "plural": "Table Ones",              # CHANGE: many records (e.g. "Doctors")
+        "menu": "Table One Management",      # CHANGE: menu words   (e.g. "Doctors Management")
+        "fields": [                          # CHANGE every "name" and "label" below
+            {"name": "T1_ID",     "label": "Table One ID",            "input": "number"},
+            {"name": "T1_COL1",   "label": "Table One Column 1",      "input": "text"},
+            {"name": "T1_COL2",   "label": "Table One Column 2",      "input": "text"},
+            {"name": "T1_COL3",   "label": "Table One Column 3",      "input": "text"},
+            {"name": "T1_SEARCH", "label": "Table One Search Column", "input": "text", "inquiry": "text"},  # Inquiry 1 column
         ],
     },
-    # ---------------- TABLE 2 (second master table) ----------------------
+    # ---------------- TABLE 2 (second master table) ------------------
     {
-        "key": "t2",                         # do not change
-        "table": "TABLE_TWO",
-        "pk": "T2_ID",
-        "singular": "Table Two",
-        "plural": "Table Twos",
-        "menu": "Table Two Management",
-        "fields": [
-            {"name": "T2_ID", "label": "Table Two ID", "input": "number"},
-            {"name": "T2_COL1", "label": "Table Two Column 1", "input": "text"},
-            {"name": "T2_COL2", "label": "Table Two Column 2", "input": "text"},
-            {"name": "T2_BDATE", "label": "Table Two Birth Date", "input": "date", "inquiry": "age"},
-            {"name": "T2_COL3", "label": "Table Two Column 3", "input": "text"},
+        "key": "t2",                         # KEEP
+        "table": "TABLE_TWO",                # CHANGE: table name
+        "pk": "T2_ID",                       # CHANGE: primary key column
+        "singular": "Table Two",             # CHANGE: one record   (e.g. "Patient")
+        "plural": "Table Twos",              # CHANGE: many records (e.g. "Patients")
+        "menu": "Table Two Management",      # CHANGE: menu words
+        "fields": [                          # CHANGE every "name" and "label" below
+            {"name": "T2_ID",    "label": "Table Two ID",         "input": "number"},
+            {"name": "T2_COL1",  "label": "Table Two Column 1",   "input": "text"},
+            {"name": "T2_COL2",  "label": "Table Two Column 2",   "input": "text"},
+            {"name": "T2_BDATE", "label": "Table Two Birth Date", "input": "date", "inquiry": "age"},  # Inquiry 2 column
+            {"name": "T2_COL3",  "label": "Table Two Column 3",   "input": "text"},
         ],
     },
 ]
 
-# ---------------- TABLE 3 (transaction table) ----------------------------
+# ---------------- TABLE 3 (transaction table) ------------------------
 TRANSACTION = {
-    "key": "t3",                             # do not change
-    "table": "TABLE_THREE",
-    "pk": "T3_ID",
-    "singular": "Table Three",
-    "plural": "Table Threes",
-    "menu": "Table Three Transaction Management",
-    "record": "transaction record",
-    "fields": [
-        {"name": "T3_ID", "label": "Table Three ID", "input": "number"},
-        {"name": "T2_ID", "label": "Table Two ID", "input": "number", "fk": "t2"},
-        {"name": "T1_ID", "label": "Table One ID", "input": "number", "fk": "t1"},
-        {"name": "T3_DATE", "label": "Table Three Date/Time", "input": "datetime-local", "inquiry": "date"},
-        {"name": "T3_COL1", "label": "Table Three Column 1", "input": "textarea"},
-        {"name": "T3_COL2", "label": "Table Three Column 2", "input": "textarea"},
+    "key": "t3",                             # KEEP
+    "table": "TABLE_THREE",                  # CHANGE: table name
+    "pk": "T3_ID",                           # CHANGE: primary key column
+    "singular": "Table Three",               # CHANGE: one record   (e.g. "Consultation")
+    "plural": "Table Threes",                # CHANGE: many records (e.g. "Consultations")
+    "menu": "Table Three Transaction Management",  # CHANGE: menu words
+    "record": "transaction record",          # CHANGE: words in messages (e.g. "consultation record")
+    "fields": [                              # CHANGE every "name" and "label" below
+        {"name": "T3_ID",   "label": "Table Three ID",        "input": "number"},
+        {"name": "T2_ID",   "label": "Table Two ID",          "input": "number", "fk": "t2"},        # FK to TABLE 2 (same name as T2 pk)
+        {"name": "T1_ID",   "label": "Table One ID",          "input": "number", "fk": "t1"},        # FK to TABLE 1 (same name as T1 pk)
+        {"name": "T3_DATE", "label": "Table Three Date/Time", "input": "datetime-local", "inquiry": "date"},  # Inquiry 5 column
+        {"name": "T3_COL1", "label": "Table Three Column 1",  "input": "textarea"},
+        {"name": "T3_COL2", "label": "Table Three Column 2",  "input": "textarea"},
     ],
 }
 
+# ---------------- INQUIRY page words (optional) ----------------------
 INQUIRY = {
-    "menu": "Inquiry",
+    "menu": "Inquiry",                       # CHANGE (optional): menu words
     "card": "Five searches.",
     "note": "Each result uses COUNT(*).",
     "age_from": "From age",
     "age_to": "To age",
     "date_from": "From date",
     "date_to": "To date",
-    "prompts": {
+    "prompts": {                             # CHANGE (optional): words used in result messages
         "text": "Inquiry 1",
         "age": "Inquiry 2",
         "by_b": "Inquiry 3",

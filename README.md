@@ -123,6 +123,30 @@ You cannot delete a Table One / Table Two row while a Table Three row still uses
 
 The app always has this shape. Only the **names** change.
 
+### Rename checklist (one glance)
+
+Replace each placeholder with the real name from the sheet, **in every file listed**.
+Tip: in VS Code / Cursor press **Ctrl+Shift+H** (search and replace in all files), and tick **Match Case**.
+
+| Placeholder | Replace with (example: Clinic sheet) | Files |
+| --- | --- | --- |
+| `SYSTEM NAME` | `Clinic Consultations Logging System` | `config.py`, `templates/base.html` |
+| `TABLE_ONE` | `doctor` | `database.sql`, `config.py`, `queries.sql` |
+| `TABLE_TWO` | `patient` | `database.sql`, `config.py`, `queries.sql` |
+| `TABLE_THREE` | `consultation` | `database.sql`, `config.py`, `queries.sql` |
+| `T1_ID` | `docID` | everywhere (`database.sql`, `config.py`, `t1.html`, `t3.html`, `inquiry.html`, `_t3_rows.html`) |
+| `T1_COL1`, `T1_COL2`, `T1_COL3` | `docFName`, `docLName`, `docAddress` | `database.sql`, `config.py`, `t1.html`, `inquiry.html` |
+| `T1_SEARCH` | `docSpecial` | `database.sql`, `config.py`, `t1.html`, `inquiry.html` |
+| `T2_ID` | `patID` | everywhere |
+| `T2_COL1`, `T2_COL2`, `T2_COL3` | `patFName`, `patLName`, `patTelNo` | `database.sql`, `config.py`, `t2.html`, `inquiry.html` |
+| `T2_BDATE` | `patBDate` | `database.sql`, `config.py`, `t2.html`, `inquiry.html` |
+| `T3_ID` | `consultID` | `database.sql`, `config.py`, `t3.html`, `_t3_rows.html` |
+| `T3_DATE` | `consultDate` | `database.sql`, `config.py`, `t3.html`, `_t3_rows.html` |
+| `T3_COL1`, `T3_COL2` | `diagnosis`, `prescription` | `database.sql`, `config.py`, `t3.html`, `_t3_rows.html` |
+| Words like `Table One Management`, `Column 1` | `Doctors Management`, `Doctor's First Name` | the HTML files (just the visible words) |
+
+**Never replace:** `t1`, `t2`, `t3` (lowercase), `/manage/t1`, and the hidden `name=` values listed in 5.3.
+
 | Slot | Placeholder names | Meaning |
 | --- | --- | --- |
 | TABLE 1 | `TABLE_ONE`, `T1_ID`, `T1_COL1` … `T1_SEARCH` | First master table. Inquiry 1 searches `T1_SEARCH`. |
@@ -273,25 +297,107 @@ git commit -m "describe the change"
 git push
 ```
 
-## 9. Must Note This on SQLITE3 Queries!!!
+## 9. SQLite notes (must know)
 
-"SAVING DATABASE QUERIES"
+### 9.1 Save the database to a file
 
-sqlite> .save 'my_database.db'
+If you opened sqlite **without** a file name (`.\sqlite3.exe` only), your tables live in memory and disappear when you quit. Save them first:
 
-"CREATING TABLE WITH FOREIGN KEYS"
+```text
+sqlite> .save database.db
+```
 
-CREATE TABLE DOCTOR (
-    doctor_id TEXT,  -- :x: Missing "PRIMARY KEY" or "UNIQUE" keyword here!
-    name TEXT
+Easier: always open with the file name, then nothing needs saving:
+
+```powershell
+.\sqlite3.exe database.db
+```
+
+### 9.2 Foreign keys: the parent column must be a PRIMARY KEY
+
+A foreign key can only point to a column that is `PRIMARY KEY` (or `UNIQUE`). Otherwise inserts fail with `foreign key mismatch`.
+
+Wrong:
+
+```sql
+CREATE TABLE doctor (
+  docID TEXT,              -- WRONG: no PRIMARY KEY here
+  docFName TEXT
+);
+```
+
+Right:
+
+```sql
+CREATE TABLE doctor (
+  docID INTEGER PRIMARY KEY,   -- RIGHT: the parent ID is the primary key
+  docFName TEXT
 );
 
-CREATE TABLE CONSULTATION (
-    id INTEGER PRIMARY KEY,
-    doc_id TEXT,
-    FOREIGN KEY(doc_id) REFERENCES DOCTOR(doctor_id)
+CREATE TABLE consultation (
+  consultID INTEGER PRIMARY KEY,
+  docID INTEGER,
+  FOREIGN KEY (docID) REFERENCES doctor(docID)
 );
+```
 
-"TURNING ON FOREIGN_KEY ON SQLITE3"
-sqlite3 your_database.db
+Short form (same meaning, used in `database.sql`):
+
+```sql
+  docID INTEGER REFERENCES doctor(docID),
+```
+
+### 9.3 Turn foreign keys on
+
+SQLite ignores foreign keys unless you turn them on **each time** you open it:
+
+```text
+.\sqlite3.exe database.db
 sqlite> PRAGMA foreign_keys = ON;
+```
+
+The website turns this on by itself. You only need it when typing queries in sqlite.
+
+---
+
+## 10. Example: one HTML section after renaming
+
+This is **section 1 (Add)** of `templates/t1.html` after renaming for a Clinic sheet.
+Compare it with the original to see exactly what changed.
+
+| What | Before (template) | After (Clinic) |
+| --- | --- | --- |
+| Heading words | `Adding a Table One record` | `Adding a Doctor record` |
+| Label words | `Table One ID`, `Column 1` … | `Doctor ID`, `Doctor FirstName` … |
+| `name="..."` | `T1_ID`, `T1_COL1` … | `docID`, `docFName` … (same spelling as `database.sql`) |
+| `action="/manage/t1/save"` | keep | keep |
+| `name="mode"` | keep | keep |
+
+```html
+<!-- ========== 1. ADD ========== -->
+<div class="panel">
+  <h2>1. Adding a Doctor record</h2>                  <!-- CHANGED: words -->
+  <form method="post" action="/manage/t1/save">       <!-- KEEP -->
+    <input type="hidden" name="mode" value="add">      <!-- KEEP -->
+
+    <label>Doctor ID</label>                           <!-- CHANGED: words -->
+    <input type="number" name="docID" required>        <!-- CHANGED: column name -->
+
+    <label>Doctor FirstName</label>
+    <input type="text" name="docFName" required>
+
+    <label>Doctor LastName</label>
+    <input type="text" name="docLName" required>
+
+    <label>Doctor Address</label>
+    <input type="text" name="docAddress" required>
+
+    <label>Doctor Specialization</label>
+    <input type="text" name="docSpecial" required>
+
+    <button type="submit">Add</button>
+  </form>
+</div>
+```
+
+Do the same in sections 2, 3, and 4 of the page: change the words, and change every `name="T1_..."` and `r['T1_...']` to the real column names.
